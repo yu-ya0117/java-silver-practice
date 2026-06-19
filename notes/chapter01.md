@@ -1,6 +1,6 @@
 # 第1章
 
-学習日: 2026-06-19
+学習日: 2026-06-19 〜 2026-06-20
 
 ## 学んだこと
 
@@ -187,7 +187,7 @@ public class Main {
 ### 練習1-3
 
 1. boolean isRainy = true;
-2. char character = '駆';
+2. char favoriteCharacter = '駆';
 3. final double PI = 3.14;
 4. long longNumber = 314159265853979L;
 5. String message = "ミナトの一撃！敵に15ポイントのダメージを与えた";
