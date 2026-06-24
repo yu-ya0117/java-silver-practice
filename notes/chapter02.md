@@ -1,6 +1,6 @@
 # 第2章
 
-学習日: 2026-06-21
+学習日: 2026-06-21 ＋ 2026-06-24 ＋　2026-06-25
 
 ## 学んだこと
 
@@ -26,6 +26,7 @@
   - 例：5・"Hello World"など
   - リテラルはデータ型を持っている
 - エスケープシーケンス：String型やchar型で使われる特殊文字
+  - Macの場合は「¥」のかわりに「\」(\optionキー＋¥)を使用する 
 - テキストブロック：複数行にわたる文字列を直感的にかつ簡潔に記述ための方法
   - 2つの"""とその挟まれた各行のうち、最も左側に書いた文字を記述した部分を、複数行リテラルの左側とみなす。 
 
@@ -123,7 +124,7 @@
 
 注意：インクリメントは他の演算子とは一緒に使わないこと！
 
-以下サンプルコード
+以下サンプルコード (chapter02/code02-05/src/Main.java)
 ```
 public class Main{
     public static void main(String[] args){
@@ -184,9 +185,14 @@ public class Main{
 (変換先の型名) 式
 ```
 
-以下例
+以下例 (chapter02/code02-07/src/Main.java)
 ```
-int a = (int)3.2;   // aには3が代入される
+public class Main {
+    public static void main(String[] args) {
+        int a = (int)3.2;   // aには3が代入される
+        System.out.println(a);  // 3が出力される
+    }
+}
 ```
 a = 23なら直接代入できる。  
 a = 3.2は直接は代入できない。  
@@ -241,27 +247,31 @@ public class Main{
   - これもpaizaDランク問題では頻出
   - これもimport java.util.Scanner;をインポートして使う(後述)
 
-Randomをimportで使う場合
+Randomをimportで使う場合(chapter02/code02-13/src/Main.java)
 ```
 import java.util.Random;
 
 public class Main{
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Random random = new Random();
-        int r = random.nextInt(100);
+        int r = random.nextInt(90);   // 0〜89までの整数をランダムでrに代入される
+        System.out.println(r);
     }
 }
 ```
 
-ScannerをImportで使う場合
+ScannerをImportで使う場合(chapter02/code02-14/src/Main.java)
 ```
 import java.util.Scanner;
 
 public class Main{
-    public static void main(String[] args){
+    public static void main(String[] args) {
+        System.out.println("あなたの名前を入力してください。");
         Scanner sc = new Scanner(System.in);
-        String s = sc.nextLine();   // 1行分の文字列を受け付ける
-        int n = sc.nextInt();   // 1つの整数を受け付ける
+        String name = sc.nextLine();  // キーボードから1行分文字列を受け付ける
+        System.out.println("あなたの年齢を入力してください。");
+        int age = sc.nextInt();   // キーボードから1つ分整数を受け付ける
+        System.out.println("ようこそ、" + age + "歳の" + name + "さん");
     }
 }
 ```
