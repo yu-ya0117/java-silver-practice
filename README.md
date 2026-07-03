@@ -21,13 +21,18 @@ Java Silver取得とSpring Boot学習準備のための学習リポジトリで�
 | 2026/06/21 | chapter02 | オペランド、式の評価、演算子、型変換、命令実行の文、まとめ、練習問題                              |
 | 2026/06/24 | chapter02 | chapter02のサンプルコードを追加、notesを一部修正                                 |
 | 2026/06/25 | chapter02 | chapter02のサンプルコードを追加、notesを一部修正                                 |
+| 2026/06/26 | chapter03 | 制御構造の種類、ブロックの書き方、条件式、if-elseの条件分岐、その他の条件分岐                      |
+| 2026/06/27 | chapter03 | 繰り返し                                                            |
+| 2026/06/29 | chapter03 | 複雑な繰り返し、制御構造の応用、まとめ、練習問題3-1〜3-5                                 |
+| 2026/06/30 | chapter03 | 練習問題3-6                                                         |
+| 2026/07/03 | chapter03 | chapter03のサンプルコードを追加、notesを一部修正 |                                
 
 
 ## 学習状況
 - [x] ~chapter00~
 - [x] ~chapter01~
 - [x] ~chapter02~
-- [ ] chapter03
+- [x] ~chapter03~
 - [ ] chapter04
 - [ ] chapter05
 - [ ] chapter06
