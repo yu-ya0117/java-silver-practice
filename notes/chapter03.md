@@ -1,6 +1,6 @@
 # 第3章
 
-学習日: 2026-06-26 〜　2026-06-30
+学習日: 2026-06-26 〜　2026-07-03
 
 ## 学んだこと
 
@@ -223,7 +223,7 @@ else ifをたくさん使うと冗長になる。
 1. 全ての条件式が==で、左辺と右辺が一致するか比較する式になっており、それ以外の<、>、!=などが使われていない。
 2. 比較する対象が整数型(byte、short、intのいずれか)、文字列型(String)、文字(char)であり、小数や真偽値ではない。
 
-よく見かける switch 文の例
+よく見かけるswitch文の例 (chapter03/code03-06/src/Main.java)
 ```
 public class Main{
   public static void main(String[] args){
@@ -246,12 +246,12 @@ public class Main{
 break;を書き忘れると、コンパイルエラーにはならず、  
 すぐ下の別のcase文が実行されてしまい、不具合の原因になる。
 
-->と{}を使う書き方の例
+->と{}を使う書き方の例 (chapter03/code03-05/src/Main.java)
 ```
 public class Main{
   public static void main(String[] args){
     System.out.println("あなたの運勢を占います");
-    int fortune = new java util.Random().nextInt(5) + 1;
+    int fortune = new java.util.Random().nextInt(5) + 1;
     switch (fortune) {
       case 1, 2 -> {
         System.out.println("いいね！");
@@ -268,23 +268,35 @@ public class Main{
 ```
 この場合はbreakを書く必要がない。
 
-また、switch文は以下のように式としても利用できる。
+また、switch文は以下のように式としても利用できる。 (chapter03/code03-07/src/Main.java)
 ```
-String s = switch (fortune){
-  case 1 -> "大吉";
-  case 2 -> "中吉";
-  case 3 -> "吉";
-  default -> "凶";
-};
-System.out.println("運勢は" + s);
+public class Main{
+    public static void main(String[] args) {
+        int fortune = new java.util.Random().nextInt(4) + 1;
+        String s = switch (fortune){
+            case 1 -> "大吉";
+            case 2 -> "中吉";
+            case 3 -> "吉";
+            default -> "凶";
+        };
+        System.out.println("運勢は" + s);
+    }
+}
 ```
+このswitch文の評価結果が化けて変数sに代入される。
 
 #### 三項演算子
 
-分岐が2つの場合は三項演算子というものが使える。
+分岐が2つの場合は三項演算子というものが使える。 (chapter03/code03-08/src/Main.java)
 
 ```
-String s = age >= 18 ? "成人" : "未成年";
+public class Main {
+    public static void main(String[] args) {
+        int age = 40;
+        String s = age >= 18 ? "成人" : "未成年";
+        System.out.println(s);
+    }
+}
 ```
 age >= 18 ?は条件式、  
 "成人"の部分は第1ブロック、  
@@ -292,12 +304,14 @@ age >= 18 ?は条件式、
 
 したかって、三項演算子は元々は以下の書き換えである。
 ```
+int age = 40;
 String s;
 if (age >= 18) {
   s = "成人";
 } else {
   s = "未成年";
 }
+System.out.println(s);
 ```
 
 ### 6. 繰り返し（ループ）
@@ -311,27 +325,27 @@ if (age >= 18) {
 
 #### 6-1. while文とdo-while文
 
-while 文のサンプルコード
+while 文のサンプルコード (chapter03/code03-09/src/Main.java)
 ```
 public class Main{
   public static void main(String[] args){
     int temp = 30;
     while (temp > 25){
       temp--;
-      System.out.println("温度を1度下げました。")
+      System.out.println("温度を1度下げました。");
     }
   }
 }
 ```
 
-do-while文のサンプルコード
+do-while文のサンプルコード (chapter03/code03-10/src/Main.java)
 ```
 public class Main{
   public static void main(String[] args){
     int temp = 30;
     do {
       temp--;
-      System.out.println("温度を1度下げました。")
+      System.out.println("温度を1度下げました。");
     } while (temp > 25);
   }
 }
@@ -349,7 +363,7 @@ while文は、条件式がtrueの場合のみ実行される。
 
 for文は繰り返しを行う回数が決まっている場合に使用される。
 
-for文の代表的なサンプルコード
+for文の代表的なサンプルコード (chapter03/code03-11/src/Main.java)
 ```
 public class Main{
   public static void main(String[] args){
@@ -436,7 +450,8 @@ for (int i = 0; i < 10;){・・・}
 プログラムを書いていると、時々「分岐の中に分岐」「繰り返しの中に分岐」のような構造が存在する。  
 このような構造を入れ子またはネストという。
 
-以下はネストされたfor文を利用して九九の表を出力するプログラム
+以下はネストされたfor文を利用して九九の表を出力するプログラム  
+(chapter03/code03-12/src/Main.java)
 ```
 public class Main{
   public static void main(String[] args){
@@ -456,7 +471,7 @@ public class Main{
 繰り返しを即座に中断して、for文から脱出したい場合はbreak、  
 同じ繰り返しの次の周回に進む場合はcontinueを使用する。
 
-breakの場合
+breakの場合 (chapter03/code03-13/src/Main.java)
 ```
 public class Main{
   public static void main(String[] args){
@@ -475,7 +490,7 @@ public class Main{
 1
 2
 ```
-continueの場合
+continueの場合 (chapter03/code03-14/src/Main.java)
 ```
 public class Main{
   public static void main(String[] args){
