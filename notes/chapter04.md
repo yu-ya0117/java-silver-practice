@@ -1,6 +1,6 @@
 # 第3章
 
-学習日: 2026-07-04 〜　（現在学習中）
+学習日: 2026-07-04 〜 （現在学習中）
 
 ## 学んだこと
 
@@ -586,4 +586,66 @@ nullが代入されると、参照型の変数はどこも参照しない状態�
 
 これは、nullが格納されている配列変数を利用しようとしたときに発生する。  
 ArrayIndexOutOfBonusExceptionとともに、配列処理でよく見かける例外のうちの一つである。
+
+### 8. 多次元配列
+
+これまでの配列は全て1次元配列であったが、  
+1次元配列に縦の並びを加えると2次元配列になる。
+
+[![Image from Gyazo](https://i.gyazo.com/c84047cbe88eee21ec76a03bb84ab7b9.png)](https://gyazo.com/c84047cbe88eee21ec76a03bb84ab7b9)
+
+上の図は2次元配列のイメージで、要素が縦横に並んでいる。  
+データを表のような形で扱いたいときに使用すると便利。  
+
+２次元以上の配列のことを多次元配列と呼ぶ。  
+業務用システムの開発では、多次元配列を使う機会は少ないが、
+科学技術計算などではよく利用される。
+
+2次元配列の宣言
+```
+要素の型[][] = new　要素の型[行数][列数]
+```
+2次元配列の利用方法
+```
+配列変数名[行の添え字][列の添え字]
+```
+
+2次元配列の利用のサンプルコード  
+(chapter04/code04-12/src/Main.java)
+```
+public class Main {
+    public static void main(String[] args) {
+        int[][] scores = new int[2][3]; //  2行３列の配列
+        scores[0][0] = 40;
+        scores[0][1] = 50;
+        scores[0][2] = 60;
+        scores[1][0] = 80;
+        scores[1][1] = 60;
+        scores[1][2] = 70;
+        System.out.println(scores[1][1]);
+    }
+}
+```
+2次元配列は、1次元配列とは異なり、  
+[]を2つ使用している。  
+1つ目の[]で行、2つ目の[]で列を指定している。
+
+Javaにおける2次元配列は、「表」のイメージではなく、  
+あくまでも「配列の配列」である。  
+2行×3列の表の場合、要素数が2の行配列（親配列）の中に  
+要素数が3の列配列（子配列）が入っている。
+実際のメモリ上では以下のようなイメージになっている。
+
+[![Image from Gyazo](https://i.gyazo.com/6dd6da15051abd12a927bf4cf31c463c.png)](https://gyazo.com/6dd6da15051abd12a927bf4cf31c463c)
+
+この状態をプログラムで表すと以下のようになる。
+```
+public class Main {
+    public static void main(String[] args) {
+        int[][] scores = {{40, 50, 60}, {80, 60,70}};   // 2次元配列の初期化
+        System.out.println(scores.length);  // 2が出力される
+        System.out.println(scores[0].length);   // 3が出力される
+    }
+}
+```
 
