@@ -1,0 +1,738 @@
+# 第3章
+
+学習日: 2026-07-04 〜 2026-07-14
+
+## 学んだこと
+
+- 配列のメリット
+  - 配列を使わない問題点
+  - 配列とは
+- 配列の書き方
+  - 配列の作成方法
+  - 配列の利用
+  - 配列の初期化
+  - 配列の省略記法
+- 配列とfor文
+  - パターン1：ループによる全要素の利用
+  - パターン2：ループによる集計
+  - パターン3：添え字に対応した情報の利用
+  - 拡張for文
+- 配列の舞台裏
+  - メモリと変数
+  - メモリと配列
+  - 配列を複数の変数で参照する
+- ガベージコレクション
+- null
+  - NullPointerException
+- 多次元配列
+
+## 詰まったこと
+配列やメモリのせつめいなどは文字だけで説明するのが難しいと思ったので今回は図を挿入した。
+
+## 用語集 & 補足
+
+### 1. 用語
+
+- 配列：一つの種類の複数のデータを並び順で格納するデータ構造のこと。
+- 要素：配列の中に連続して並んでいる変数のような箱のうちのひとつ。
+- 添え字：配列の各要素に付けられている番号のこと。インデックスともいう。
+- new演算子：メモリ上に配列の実体を確保し、指定した要素数の箱を使用する準備をするための宣言。
+- 例外：Javaにおいてはコンパイルではなく、実行時に発生するエラーのこと。
+- 拡張for文：配列の要素を一つずつ取り出し繰り返し処理を行う特殊なループ。
+- アドレス：メモリ上の位置を表す参照値のこと。
+- 参照：配列の先頭およびオブジェクトの実体がメモリ上のどこにあるかを示すこと。
+  - 参照型：メモリ上の番地を代入する変数型。
+  - 基本型：intやbooleanなどの変数を格納する型、プリミティブ型ともいう。
+- ガベージコレクション：実行中のプログラムが生み出したメモリ上のゴミを自動的に探し出して片付ける仕組み。
+- null：何もない状態を表す値。
+- 多次元配列：配列の要素としてさらに配列が格納されているデータ構造、配列の配列。
+
+### 2.配列のメリット
+
+#### 2-1. 配列を使わない問題点
+
+chapter04/code04-01/src/Main.java
+```
+public class Main {
+    public static void main(String[] args) {
+        int sansu = 20;
+        int kokugo = 30;
+        int rika = 40;
+        int eigo = 50;
+        int shakai = 80;
+        int sum = sansu + kokugo + rika + eigo + shakai;
+
+        int avg = sum / 5;
+        System.out.println("合計点：" + sum);
+        System.out.println("平均点：" + avg);
+    }
+}
+```
+このコードの不便なところ
+
+1. テスト科目が増えるたびに追加しなければならない
+2. まとめて処理できない
+
+そこで使われるのか、今回の配列である。
+
+#### 2-2. 配列とは
+
+[![Image from Gyazo](https://i.gyazo.com/5e9b9ffd0b7dde0b8758fd0894cf663a.png)](https://gyazo.com/5e9b9ffd0b7dde0b8758fd0894cf663a)
+
+配列には変数ような箱が連続して並んでいて、そのうちの1つを要素という。  
+その要素に付けられている番号を添え字またはインデックスという。  
+ポイントにも書いてある通り、インデックスは0から始まる。
+
+また各要素には同じ種類のデータしか保存できないのも特徴。  
+例えば配列をintと決めた場合、この配列の要素は全てint型になる。
+
+### 3. 配列の書き方
+
+#### 3-1. 配列の作成方法
+
+配列の書き方は以下の3つのステップからなる。
+1. 配列の作成
+2. 要素の作成
+3. 要素を配列変数に代入
+
+#### STEP1. 配列変数を宣言
+
+要素の型[] 配列変数名;
+
+int型の要素を配列に代入する場合の配列変数の宣言例
+```
+int[] scores;
+```
+ここで使われているint[]は、intとよく似ているが別物である点に注意。
+配列は参照型である。
+
+#### STEP2. 要素の作成
+
+int型の要素を5個作成する場合
+```
+new int[5];
+```
+ここで初めてnew演算子が出てくる。  
+new演算子は指定された型の要素を[]内に指定された数だけ作成する。  
+
+
+#### STEP3. 要素を配列変数に代入
+
+上記STEP2で作成した要素を、=を使って配列変数に代入すると以下のようになる。
+```
+scores = new int[5];
+```
+ここは以前学習した変数の代入と変わらない。
+
+まとめると以下のようになる。
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] scores;
+        scores = new int[5];
+    }
+}
+```
+
+配列変数の宣言から要素の代入までをひとまとめにすることもできる。
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] scores = new int[5];
+    }
+}
+```
+こっちの方がよく見かける形かもしれない。
+
+#### 配列の要素数の調べ方
+
+配列変数名.length
+
+配列の要素数を調べる時はlength、カッコはつけない。  
+文字列の長さを調べる時はlength()、こちらはカッコをつける。  
+紛らわしいので注意！
+
+chapter04/code04-02/src/Main.java
+```
+public class Main {
+    public static void main (String[] args){
+        int[] scores = new int[5];
+        int num = scores.length;
+        System.out.println("要素の数：" + num);
+    }
+}
+```
+
+#### 3-2. 配列の利用
+
+以下は配列scoresの2番目の要素に30を代入して出力するプログラム  
+(chapter04/code04-03/src/Main.java)
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] scores;
+        scores = new int[5];
+        scores[1] = 30;
+        System.out.println(scores[1]);
+    }
+}
+```
+配列の最初のインデックスは0であるため、  
+配列scoresの2番目の要素と言われた場合はscores[1]になる。
+
+#### 3-3. 配列の初期化
+
+配列の要素は自動的に初期化される。  
+いきなり利用してもコンパイルエラーにはならない。  
+以下の例では、5つの配列の要素を全て0で初期化している。  
+(chapter04/code04-04/src/Main.java)
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] scores = new int[5];  // ここで全ての要素が0で初期化される
+        System.out.println(scores[0]);
+    }
+}
+```
+
+初期化される値は、要素の方によって決まる。
+・intやdoubleなどの数値型 → 0
+・boolean → false
+・String型 → null
+
+
+#### 3-4. 配列の省略記法
+
+配列は以下の2パターンで省略できる。
+
+1. 要素の型[] 配列変数名 = new 要素の型[] {値1, 値2, 値3, ・・・};
+2. 要素の型[] 配列変数名 = {値1, 値2, 値3, ・・・};
+
+それぞれの省略例
+```
+int[] scores = new int[] {20, 30, 40, 50, 80};
+int[] scores = {20, 30, 40, 50, 80};
+```
+2のパターンの方が省略形としてよく見られる。
+
+### 4.配列と例外
+
+配列でよくある間違い
+
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] scores = {20, 30, 40, 50, 80};
+        int sum = scores[1] + scores[2] + scores[3] + scores[4] + scores[5];    // 例外発生
+        int avg = sum / scores.length;
+        System.out.println("合計点：" + sum);
+        System.out.println("平均点：" + avg);
+    }
+}
+```
+プログラムを実行するとどうなるの？：  
+存在しない要素をコード内で使っていても、コンパイルは通る。  
+しかし、このプログラムを実行すると、その行を処理しようとした際に、  
+ArrayIndexOutOfBoundsExceptionという例外のエラーメッセージが表示される。
+するとプログラムは中断されてしまう。
+
+なぜこれでエラーが発生するの？：  
+scoresの配列はsocres[4]までしか作成していないにも関わらず、  
+存在しない要素であるscores[5]を使用しようとしている。
+
+### 4. 配列とfor文
+
+chapter03でループを学んできたが、  
+このループを使えば配列をよりスマートに扱える。  
+まずは配列をつかったループの基本形  
+(chapter04/code04-05/src/Main.java)
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] scores = {20, 30, 40, 50, 80};
+        for(int i = 0; i < scores.length; i++){
+            System.out.println(scores[i]);
+        }
+    }
+}
+```
+
+以下覚えておきたい配列活用の定石  
+パターン1：ループによる全要素の利用  
+パターン2：ループによる集計  
+パターン3：添え字に対応した情報の利用
+
+#### 4-1. パターン1：ループによる全要素の利用
+
+配列の最初から最後まで、全要素を順番にアクセスするやり方。  
+上記のサンプルコードはこのパターンにあたる。  
+インデックスはループ変数を使用しているため、  
+ループのたびにo→1→2→3→4と変化して、  
+先頭のscores[0]から最後のscores[4]まで順にアクセスしている。  
+もし科目が増減して要素が変わったとしても、for文の記述には一切影響はない。
+
+俗にいう「配列を」回すの基本形とも言える。
+
+forループで配列を回す方法：
+```
+for(int i = 0; i < scores.length; i++){
+  // 配列変数名[i]を使った処理
+}
+```
+
+#### 4-2. パターン2：ループによる集計
+
+点数管理プログラム
+(chapter04/code04-01/src/Main.javaの改良版)
+(chapter04/code04-06/src/Main.java)
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] scores = {20, 30, 40, 50, 80};
+        int sum = 0;
+        for (int i = 0; i < scores.length; i++) {
+            sum += scores[i];
+        }
+        int avg = sum / scores.length;
+        System.out.println("合計点：" + sum);
+        System.out.println("平均点：" + avg);
+    }
+}
+```
+
+50点以上の科目の数を調べるプログラム
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] scores = {20, 30, 40, 50, 80};
+        int count = 0;
+        for(int i = 0; i < scores.length; i++){
+            if (scores[i] >= 50 ){
+                count++;
+            }
+        }
+        System.out.println("50点以上の科目の数は：" + count);
+    }
+}
+```
+
+#### 4-3. パターン3：添え字に対応した情報の利用
+
+【ここで問題】
+
+0〜3のの整数がランダムに格納された10個の要素を持つ配列seqがあるとする。  
+各要素の整数は、実はDNAを構成する4種類の塩基を意味していて、  
+画面には0,1,2,3という数字ではなく、  
+それぞれの整数に対応させたA,T,G,Cという塩基記号で表示するにはどうすればよいか。
+
+まずは通常の方法の場合
+
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] seq = new int[10];
+
+        // 塩基配列をランダムに生成
+        for (int i = 0; i < 10; i++) {
+            seq[i] = new java.util.Random().nextInt(4);
+        }
+
+        // 生成した塩基配列の記号を表示
+        for (int i = 0; i < 10; i++) {
+            switch (seq[i]){
+                case 0 -> {
+                    System.out.print("A ");
+                }
+                case 1 -> {
+                    System.out.print("T ");
+                }
+                case 2 -> {
+                    System.out.print("G ");
+                }
+                case 3 -> {
+                    System.out.print("C ");
+                }
+            }
+        }
+    }
+}
+```
+しかし、この書き方は冗長である。
+
+そこで、生成した塩基配列の記号を表示する部分を以下のように書き換える。
+```
+char[] base = {'A', 'T', 'G', 'C'};
+System.out.print(base[seq[i]] + " ");
+```
+
+書き直した2行目の処理は、分解すると3つの処理に分けることができる。
+
+```
+int baseType = seq[i];  // i番目の数値を取得する
+char baseChar = base[baseType]; // 数値に対応する記号を取得する
+System.out.print(baseChar + " "); // 記号を画面に出力する
+```
+
+#### 4-4. 拡張for文
+
+全ての要素を最初から最後まで順番に回すとき、   
+通常のループの回し方の他に以下の方法もある。
+```
+for (要素の型 任意の変数名 ： 配列変数名){
+  // ループ処理の内容
+}
+```
+
+実際に以下のサンプルコードで比較してみる。
+
+従来のfor文の場合
+(chapter04/code04-05/src/Main.java)
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] scores = {20, 30, 40, 50, 80};
+        for(int i = 0; i < scores.length; i++){
+            System.out.println(scores[i]);
+        }
+    }
+}
+```
+
+拡張for文の場合
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] scores = {20, 30, 40, 50, 80};
+        for(int score : scores){
+            System.out.println(score);
+        }
+    }
+}
+```
+
+拡張for文の場合はループ変数やインデックスを記述する必要がなくなるので、  
+バグ混入の可能性を低く抑え、スッキリとしたコードを書くことができる。
+
+
+### 5. 配列の舞台裏
+
+以下のサンプルコードを実行すると面白い結果になる。  
+(chapter04/code04-10/src/Main.java)
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] arrayA = {1, 2, 3};
+        int[] arrayB;
+        arrayB = arrayA;
+        arrayB[0] = 100;
+        System.out.println(arrayA[0]);
+    }
+}
+```
+
+実行結果
+```
+100
+```
+
+実行結果は1にならなかった。   
+なぜなのか、以下の観点から紐解いていく。
+
+#### 5-1. メモリと変数
+
+コンピュータは使用するデータをメモリ上に記憶する。  
+メモリは以下の図のように区画整理されており、  
+各区画にはアドレスが振られている。
+変数を宣言すると、空いている任意の区画を確保するためにメモリを確保する。  
+そして変数に値を代入すると、確保しておいた区画に値が記憶される。
+
+例えばint型の変数を宣言して代入した場合、以下の図のようになる。
+
+[![Image from Gyazo](https://i.gyazo.com/0c8804611666393d75d104bee4f0976a.png)](https://gyazo.com/0c8804611666393d75d104bee4f0976a)
+
+int型は4バイトなので、変数宣言時にメモリ上の4つの区画を確保し、  
+値を代入する時に区画がメモリに記憶される。
+
+#### 5-2. メモリと配列
+
+配列変数の宣言によりint[]型の変数が、new演算子によって配列の実体（要素の集まり）が、  
+それぞれメモリ上の区画に作成される。
+配列変数には、5つの変数まるごとではなく、**「最初の要素のアドレス」** が代入される。
+
+[![Image from Gyazo](https://i.gyazo.com/a34d535cfc4d7210c3bfa29316325711.png)](https://gyazo.com/a34d535cfc4d7210c3bfa29316325711)
+
+
+
+int[] numbers = new int[5];実行した場合
+
+1. int型の要素を5つ持つ配列がメモリ上に作られる
+2. int[]型の配列変数numbersがメモリ上に作成される
+3. 配列変数numbersに配列の先頭アドレスが代入されている。
+
+配列変数numbersに格納されているのは値そのものではない。  
+参照先の番地である。
+
+プログラムからnumbers[n]と指定された場合、
+
+1. numbersから番地(上記の場合は8832)を取り出し、配列の先頭要素を見つける。
+2. 見つけた配列の先頭要素からn個後ろの要素の区画を読み書きする。
+
+この配列変数numbersが「配列の実体は8832番地にあります」と指し示す動作のことを参照という。
+
+
+#### 5-3. 配列を複数の変数で参照する
+
+chapter04/code04-10/src/Main.java
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] arrayA = {1, 2, 3};
+        int[] arrayB;
+        arrayB = arrayA;
+        arrayB[0] = 100;
+        System.out.println(arrayA[0]);
+    }
+}
+```
+
+なぜこのプログラムの出力結果が「100」になったのか？
+
+5行目で代入されているのはarrayAに入っている先頭番地である。  
+arrayAに8832番地が入っているならば、arrayBに代入されるのは8832番地である。  
+よって、arrayAとarrayBは**同じ配列を参照している**ことになる。
+
+この状態でarrayB[0] = 100;とするのは、arrayA[0] = 100;とするのと同じである。  
+したがって、このプログラムの出力が「100」となる。
+
+[![Image from Gyazo](https://i.gyazo.com/3e2674edbbaea17840df4bd3ee203fe5.png)](https://gyazo.com/3e2674edbbaea17840df4bd3ee203fe5)
+
+
+### 6. ガベージコレクション
+
+chapter04/code04-11/src/Main.java
+```
+public  class Main {
+    public static void main(String[] args) {
+        boolean judge = true;
+        if (judge) {
+            int[] array = {1, 2, 3};  // ブロック内で配列を作成して終了
+        }
+    }
+}
+```
+5行目のif文の中で配列変数arrayが宣言され、3つの要素を持って初期化を行っている。  
+しかし、配列変数の寿命はif文のブロックの中だけなので、  
+6行目の時点で配列変数arrayはメモリから消滅してしまう。
+
+一方、newで確保された3つの要素を持った配列の実体は普通の変数ではないため、  
+**ブロックが終了しても寿命が消えることはない。**  
+その結果、この配列はどの配列変数からも参照されない状態でメモリに残る。
+
+残った配列は、Javaのプログラムからどのような方法を使っても読み書きすることができず、  
+事実上のメモリ内のゴミとなってしまう。
+ゴミとなった配列を放置し続けると、ゴミが溜まり続け、メモリが圧迫してしまう可能性がある。
+
+他の言語の場合、  
+使用できなくなった配列はもう使わないから破棄してメモリ領域を返すとプログラムで明示し、
+メモリの後片付けを行う必要がある。
+
+Javaの場合は、 実行中にプログラム上に生み出したメモリ上のゴミを自動的に探し出し、
+どの変数からも参照されなくなったメモリ領域を自動的に片付けてくれる。
+これがガベージコレクションである。
+
+以下の場合もガベージコレクションの対象となる。
+```
+int[] a = new int[5]; // 古い配列
+a = new int[10];  // 新しい配列
+```
+
+イメージとしては以下の通り
+[![Image from Gyazo](https://i.gyazo.com/5dec8b0c617da5926d1948777e67b8c0.png)](https://gyazo.com/5dec8b0c617da5926d1948777e67b8c0)
+
+### 7. null
+
+ガベージコレクションの説明のところでは、  
+変数の寿命によって配列変数が配列を参照されなくなる事例である。  
+nullは、何もない状態を表す値で、意図的に配列を参照されないようにすることもできる。  
+（ただし例外が発生する。下記参照）
+```
+public  class Main {
+    public static void main(String[] args) {
+        int[] array = {1, 2, 3};
+        array = null;
+        array[0] = 10;
+    }
+}
+```
+4行目で配列変数arrayにnullを代入している。  
+nullは参照型の変数に代入できる。  
+nullが代入されると、参照型の変数はどこも参照しない状態になる。  
+このように、ある番地に参照していた配列変数にnullを代入し、  
+参照しない状態にすることを**参照を切る**ともいう。
+
+参照を切られた配列は、どの変数からも参照されてないので  
+ガベージコレクションの対象となる。
+
+[![Image from Gyazo](https://i.gyazo.com/e276a7722fffa9d0da2034780d594ea9.png)](https://gyazo.com/e276a7722fffa9d0da2034780d594ea9)
+
+簡単にまとめると、nullとは
+1. 参照型変数に代入すると、その変数は何も参照しなくなる。
+2. int型などのプリミティブ型には代入できない。
+
+#### NullPointerException
+
+上記のコードを実行するとコンパイルそのものは成功する。  
+しかし、実行時に「NullPointerException」と記載された例外が発生し、プログラムが中断されてしまう。  
+
+これは、nullが格納されている配列変数を利用しようとしたときに発生する。  
+ArrayIndexOutOfBoundsExceptionとともに、配列処理でよく見かける例外のうちの一つである。
+
+### 8. 多次元配列
+
+これまでの配列は全て1次元配列であったが、  
+1次元配列に縦の並びを加えると2次元配列になる。
+
+[![Image from Gyazo](https://i.gyazo.com/c84047cbe88eee21ec76a03bb84ab7b9.png)](https://gyazo.com/c84047cbe88eee21ec76a03bb84ab7b9)
+
+上の図は2次元配列のイメージで、要素が縦横に並んでいる。  
+データを表のような形で扱いたいときに使用すると便利。  
+
+２次元以上の配列のことを多次元配列と呼ぶ。  
+業務用システムの開発では、多次元配列を使う機会は少ないが、
+科学技術計算などではよく利用される。
+
+2次元配列の宣言
+```
+要素の型[][] = new　要素の型[行数][列数]
+```
+2次元配列の利用方法
+```
+配列変数名[行の添え字][列の添え字]
+```
+
+2次元配列の利用のサンプルコード  
+(chapter04/code04-12/src/Main.java)
+```
+public class Main {
+    public static void main(String[] args) {
+        int[][] scores = new int[2][3]; //  2行３列の配列
+        scores[0][0] = 40;
+        scores[0][1] = 50;
+        scores[0][2] = 60;
+        scores[1][0] = 80;
+        scores[1][1] = 60;
+        scores[1][2] = 70;
+        System.out.println(scores[1][1]);
+    }
+}
+```
+2次元配列は、1次元配列とは異なり、  
+[]を2つ使用している。  
+1つ目の[]で行、2つ目の[]で列を指定している。
+
+Javaにおける2次元配列は、「表」のイメージではなく、  
+あくまでも「配列の配列」である。  
+2行×3列の表の場合、要素数が2の行配列（親配列）の中に  
+要素数が3の列配列（子配列）が入っている。
+実際のメモリ上では以下のようなイメージになっている。
+
+[![Image from Gyazo](https://i.gyazo.com/6dd6da15051abd12a927bf4cf31c463c.png)](https://gyazo.com/6dd6da15051abd12a927bf4cf31c463c)
+
+この状態をプログラムで表すと以下のようになる。
+```
+public class Main {
+    public static void main(String[] args) {
+        int[][] scores = {{40, 50, 60}, {80, 60,70}};   // 2次元配列の初期化
+        System.out.println(scores.length);  // 2が出力される
+        System.out.println(scores[0].length);   // 3が出力される
+    }
+}
+```
+
+## まとめ
+
+- 配列の基礎
+  - 配列とは、同じ型の複数の値をまとめて扱うデータ構造である。
+  - 配列を構成するそれぞれの箱を要素、何番目の箱であるかを示す数を添え字またはインデックスという。
+    - 配列のインデックスは0番目から始まる。 
+- 配列の準備
+  - 配列を利用するには、「配列変数の宣言」「要素の作成」という2ステップで準備する。
+  - 配列変数の型には`要素の型[]`を指定する。
+  - 要素を作成するには、`new 要素の型[要素数]`とし、配列変数に代入する。
+- 配列の利用
+  - `配列変数名[インデックス]`でそれぞれの要素を読み書きできる。
+  - forや拡張for文を用いて配列要素に1つずつ順番にアクセスする。
+- 配列と参照
+  - 配列変数は、配列の実体（newで確保されたメモリ領域）を参照している。
+  - 特別な値nullが代入された配列変数は、どの実体も参照しない。
+  - 何らかの理由によって参照されなくなったメモリ領域は、ガベージコレクションによって自動的に解放される。
+
+## 練習問題
+
+### 練習4-1
+
+chapter04/practice04-01/src/Main.java
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] points = new int[4];  // ①
+        double[] weights = new double[5];   // ②
+        boolean[] answers = new boolean[3]; // ③
+        String[] names = new String[3]; // ④
+    }
+}
+```
+
+### 練習4-2
+
+chapter04/practice04-02/src/Main.java
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] moneyList = {121902, 8302, 55100}; // ①
+        for (int i = 0; i < moneyList.length; i++) {    // ②for文
+            System.out.println(moneyList[i]);
+        }
+        for (int money : moneyList) {   // ③拡張for文
+            System.out.println(money);
+        }
+    }
+}
+```
+
+### 練習4-3
+
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] counts = null;
+        float[] heights = {171.3F, 175.0F};
+        System.out.println(counts[1]);
+        System.out.println(counts[2]);
+    }
+}
+```
+
+5行目でNullPointerExceptionが発生する。
+（3行目でcountsがどこにも参照していないため）
+
+6行目でArrayIndexOutOfBoundsExceptionが発生する。
+（配列変数heightsは1番目までしか存在しないため）
+
+### 練習4-4
+
+chapter04/practice04-04/src/Main.java
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] numbers = {3, 4, 9};  // ①
+        System.out.println("1桁の数字を入力してください");   // ②
+        int input = new java.util.Scanner(System.in).nextInt(); // ③
+        for(int num : numbers) {  // ④
+            if(input == num){
+                System.out.println("アタリ！");
+            }
+        }
+    }
+}
+```
