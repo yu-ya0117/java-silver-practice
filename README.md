@@ -33,13 +33,14 @@ Java Silver取得とSpring Boot学習準備のための学習リポジトリで�
 | 2026/07/08 | chapter04 | ガベージコレクション、一部のサンプルコードを追加 |
 | 2026/07/10 | chapter04 | null、NullPointerException |
 | 2026/07/12 | chapter04 | 多次元配列、一部のサンプルコードを追加 |
+| 2026/07/14 | chapter04 | まとめ、練習問題、一部のサンプルコードを追加 |
 
 ## 学習状況
 - [x] ~chapter00~
 - [x] ~chapter01~
 - [x] ~chapter02~
 - [x] ~chapter03~
-- [ ] chapter04
+- [x] ~chapter04~
 - [ ] chapter05
 - [ ] chapter06
 - [ ] chapter07

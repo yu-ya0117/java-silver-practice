@@ -1,6 +1,6 @@
 # 第3章
 
-学習日: 2026-07-04 〜 （現在学習中）
+学習日: 2026-07-04 〜 2026-07-14
 
 ## 学んだこと
 
@@ -224,7 +224,7 @@ public class Main {
     public static void main(String[] args) {
         int[] scores = {20, 30, 40, 50, 80};
         int sum = scores[1] + scores[2] + scores[3] + scores[4] + scores[5];    // 例外発生
-        int avg = sum / socres.length;
+        int avg = sum / scores.length;
         System.out.println("合計点：" + sum);
         System.out.println("平均点：" + avg);
     }
@@ -233,7 +233,7 @@ public class Main {
 プログラムを実行するとどうなるの？：  
 存在しない要素をコード内で使っていても、コンパイルは通る。  
 しかし、このプログラムを実行すると、その行を処理しようとした際に、  
-ArrayIndexOutOfBonusExceptionという例外のエラーメッセージが表示される。
+ArrayIndexOutOfBoundsExceptionという例外のエラーメッセージが表示される。
 するとプログラムは中断されてしまう。
 
 なぜこれでエラーが発生するの？：  
@@ -585,7 +585,7 @@ nullが代入されると、参照型の変数はどこも参照しない状態�
 しかし、実行時に「NullPointerException」と記載された例外が発生し、プログラムが中断されてしまう。  
 
 これは、nullが格納されている配列変数を利用しようとしたときに発生する。  
-ArrayIndexOutOfBonusExceptionとともに、配列処理でよく見かける例外のうちの一つである。
+ArrayIndexOutOfBoundsExceptionとともに、配列処理でよく見かける例外のうちの一つである。
 
 ### 8. 多次元配列
 
@@ -649,3 +649,90 @@ public class Main {
 }
 ```
 
+## まとめ
+
+- 配列の基礎
+  - 配列とは、同じ型の複数の値をまとめて扱うデータ構造である。
+  - 配列を構成するそれぞれの箱を要素、何番目の箱であるかを示す数を添え字またはインデックスという。
+    - 配列のインデックスは0番目から始まる。 
+- 配列の準備
+  - 配列を利用するには、「配列変数の宣言」「要素の作成」という2ステップで準備する。
+  - 配列変数の型には`要素の型[]`を指定する。
+  - 要素を作成するには、`new 要素の型[要素数]`とし、配列変数に代入する。
+- 配列の利用
+  - `配列変数名[インデックス]`でそれぞれの要素を読み書きできる。
+  - forや拡張for文を用いて配列要素に1つずつ順番にアクセスする。
+- 配列と参照
+  - 配列変数は、配列の実体（newで確保されたメモリ領域）を参照している。
+  - 特別な値nullが代入された配列変数は、どの実体も参照しない。
+  - 何らかの理由によって参照されなくなったメモリ領域は、ガベージコレクションによって自動的に解放される。
+
+## 練習問題
+
+### 練習4-1
+
+chapter04/practice04-01/src/Main.java
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] points = new int[4];  // ①
+        double[] weights = new double[5];   // ②
+        boolean[] answers = new boolean[3]; // ③
+        String[] names = new String[3]; // ④
+    }
+}
+```
+
+### 練習4-2
+
+chapter04/practice04-02/src/Main.java
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] moneyList = {121902, 8302, 55100}; // ①
+        for (int i = 0; i < moneyList.length; i++) {    // ②for文
+            System.out.println(moneyList[i]);
+        }
+        for (int money : moneyList) {   // ③拡張for文
+            System.out.println(money);
+        }
+    }
+}
+```
+
+### 練習4-3
+
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] counts = null;
+        float[] heights = {171.3F, 175.0F};
+        System.out.println(counts[1]);
+        System.out.println(counts[2]);
+    }
+}
+```
+
+5行目でNullPointerExceptionが発生する。
+（3行目でcountsがどこにも参照していないため）
+
+6行目でArrayIndexOutOfBoundsExceptionが発生する。
+（配列変数heightsは1番目までしか存在しないため）
+
+### 練習4-4
+
+chapter04/practice04-04/src/Main.java
+```
+public class Main {
+    public static void main(String[] args) {
+        int[] numbers = {3, 4, 9};  // ①
+        System.out.println("1桁の数字を入力してください");   // ②
+        int input = new java.util.Scanner(System.in).nextInt(); // ③
+        for(int num : numbers) {  // ④
+            if(input == num){
+                System.out.println("アタリ！");
+            }
+        }
+    }
+}
+```
