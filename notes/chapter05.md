@@ -509,6 +509,7 @@ mainメソッドで受け取っていない。
 メソッドの戻り値を変数で受けずにそのまま使用することもできる。  
 
 戻り値をそのまま使うサンプルコード
+(chapter05/code05-06/src/Main.java)
 ```
 public class Main {
     public static int add(int x,int y){
@@ -539,3 +540,95 @@ public class Main {
 return文は値を戻すだけでなく、メソッドの終了も行う。  
 そのため、return文の後に処理を書いても実行されない。  
 そのようなメソッドを記述するとコンパイルエラーになってしまう。
+
+### 5. オーバーロード
+
+プログラムが大きくなると、「似たような処理を行うメソッドを複数作る」必要に迫られる。  
+しかし処理内容が似ているからといって、メソッドに同じ名前はつけられない。
+
+しかしJavaの場合、例外的に同じ名前のメソッドを複数定義する方法が存在する。  
+これをオーバーロードという。
+
+オーバーロードのサンプルコード
+(chapter05/code05-07/src/Main.java)
+```
+public class Main {
+    public static int add(int x,int y){
+        return x + y;
+    }
+
+    public static double add(double x,double y){
+        return x + y;
+
+    }
+
+    public static String add(String x,String y){
+        return x + y;
+
+    }
+    
+    public static void main(String[] args) {
+        System.out.println(add(10, 20));
+        System.out.println(add(3.5, 2.7));
+        System.out.println(add("Hello ", "World"));
+    }
+}
+```
+
+実行結果は以下のとおり
+```
+30
+6.2
+Hello World
+```
+上記のプログラムではaddが3つ定義されている。  
+仮引数の型を見ると、1つ目は「int, int」、  
+2つ目は「double, double」、  
+3つ目は「String, String」とそれぞれ異なっている。  
+
+このように、仮引数が異なれば同じメソッドを複数定義することが許されている。  
+同じ名前のメソッド名があったとしても、仮引数の型が異なっていれば、  
+JVMが呼び出し元の引数（実引数）を見て、その引数の型に一致するメソッドを呼び出してくれる。
+
+また、仮引数の型だけでなく、個数が違う場合でもオーバーロードは可能である。
+(chapter05/code05-08/src/Main.java)
+```
+public class Main{
+    public static int add(int x, int y){
+        return x + y;
+    }
+
+    public static int add(int x, int y, int z){
+        return x + y + z;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("10+20=" + add(10, 20));
+        System.out.println("10+20+30=" + add(10, 20, 30));
+    }
+}
+```
+
+実行結果は以下のとおり
+
+```
+10+20=30
+10+20+30=60
+```
+
+上記の場合は、同じint型のaddメソッドでも仮引数が2つの場合と3つの場合である。  
+1つ目は仮引数が2つ、2つ目は仮引数が3つである。  
+addメソッドが呼び出される際に、JVMは引数の型と個数を比較して、  
+一致する方のaddメソッドを呼び出してくれる。
+
+これまで`public static int add(int x, int y)`と記述してきたが、  
+このメソッド名・引数の個数・引数の型、および引数のの並び順の情報をまとめてシグネチャという。
+
+```
+add(int x, int y) // この部分をまとめてシグネチャという
+```
+
+まとめると、  
+オーバーロードは仮引数の個数か型が異なれば、同じ名前のメソッドを複数定義できる。  
+引数が同じで、戻り値の型だけ異なるものは定義できない。  
+つまり、オーバーロードはシグネチャが重複しない場合のみ許される。
