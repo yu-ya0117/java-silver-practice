@@ -30,6 +30,7 @@
 
 ## 詰まったこと
 変数のスコープとローカル変数の有効範囲の説明
+引数の参照渡しの取り扱いは要注意！
 
 ## 用語集 & 補足
 
@@ -94,7 +95,7 @@ public static void メソッド名(){
 メソッド名()
 ```
 
-シンプルなメソッドの定義と呼び出し
+シンプルなメソッドの定義と呼び出し  
 (chapter05/code05-01/src/Main.java)
 ```
 public class Main {
@@ -261,7 +262,7 @@ public static void hello(){             // ①重要事項の表明
 
 #### 3-2. 1つの引数を渡す
 
-サンプルプログラム
+サンプルコード  
 (chapter05/code05-03/src/Main.java)
 ```
 public class Main {
@@ -299,7 +300,7 @@ helloメソッドが呼び出されると、
 
 #### 3-3. 複数の引数を渡す
 
-サンプルコード
+サンプルコード  
 (chapter05/code05-04/src/Main.java)
 ```
 public class Main {
@@ -478,7 +479,7 @@ public static 戻り値の型 メソッド名(引数リスト){
 これにより、`型 変数名 = メソッドの戻り値;`という状態になり、  
 戻り値が変数に代入される。
 
-戻り値を使ったサンプルコード
+戻り値を使ったサンプルコード  
 (chapter05/code05-05/src/Main.java)
 ```
 public class Main {
@@ -508,7 +509,7 @@ mainメソッドで受け取っていない。
 
 メソッドの戻り値を変数で受けずにそのまま使用することもできる。  
 
-戻り値をそのまま使うサンプルコード
+戻り値をそのまま使うサンプルコード  
 (chapter05/code05-06/src/Main.java)
 ```
 public class Main {
@@ -549,7 +550,7 @@ return文は値を戻すだけでなく、メソッドの終了も行う。
 しかしJavaの場合、例外的に同じ名前のメソッドを複数定義する方法が存在する。  
 これをオーバーロードという。
 
-オーバーロードのサンプルコード
+オーバーロードのサンプルコード  
 (chapter05/code05-07/src/Main.java)
 ```
 public class Main {
@@ -590,7 +591,7 @@ Hello World
 同じ名前のメソッド名があったとしても、仮引数の型が異なっていれば、  
 JVMが呼び出し元の引数（実引数）を見て、その引数の型に一致するメソッドを呼び出してくれる。
 
-また、仮引数の型だけでなく、個数が違う場合でもオーバーロードは可能である。
+また、仮引数の型だけでなく、個数が違う場合でもオーバーロードは可能である。  
 (chapter05/code05-08/src/Main.java)
 ```
 public class Main{
@@ -632,3 +633,143 @@ add(int x, int y) // この部分をまとめてシグネチャという
 オーバーロードは仮引数の個数か型が異なれば、同じ名前のメソッドを複数定義できる。  
 引数が同じで、戻り値の型だけ異なるものは定義できない。  
 つまり、オーバーロードはシグネチャが重複しない場合のみ許される。
+
+### 6. 引数や戻り値に配列を用いる
+
+#### 6-1. 引数に配列を用いる
+
+メソッド定義には、int型やString型だけでなく、配列も使うこともできる。
+
+引数に配列を受け取るメソッドのサンプルコード  
+(chapter05/code05-09/src/Main.java)
+```
+public class Main {
+    public static void printArray(int[] array){
+        for(int element : array){
+            System.out.println(element);
+        }
+    }
+
+    public static void main(String[] args) {
+        int[] array = {1, 2, 3};
+        printArray(array);
+    }
+}
+```
+
+#### 6-2. 値渡しと参照渡し
+
+配列の部分でも紹介したように、int[]型のような配列型の変数には、  
+配列の実体を指し示すメモリの番地が格納されている。  
+したがって、上記のコードでprintArrayメソッドに引数として渡しているのは、  
+配列まるごとではなく、**アドレス情報のみ**である。
+
+引数として通常の変数を指定した場合、  
+メソッドに引き渡されるのは変数ではなく、変数に入っている値である。  
+このように、値そのものが呼び出される呼び出しを値渡しという。
+
+値渡しのメソッドの例
+```
+public static void main(String[] args){
+  int x = 100;
+  methodA(x);   // 変数そのものではなく、変数に代入されている100が渡されている。
+}
+
+public static void methodA(int x){
+  System.out.println(x);
+}
+```
+
+基本型の変数をメソッドで呼び出すと
+- 呼び出し元の変数の内容が、呼び出し先の引数にコピーされている。
+- 呼び出し先で引数の内容を書き換えても、呼び出し元の変数は変化しない。
+
+しかしメソッドに基本変数型ではなく、配列型を渡すと不思議なことが起こる。
+
+```
+public static void main(String[] args){
+  int[] array = {1, 2, 3};　// 配列の先頭要素の番地が8832だととする
+  printArray(array);  //  8832番地を参照する
+}
+
+public static void printArray(int[] array){   // 8832番地を参照する
+  // 処理内容
+  // ここでarray[0] = 100;とすると、mainメソッドにも影響を及ぼす
+}
+```
+
+まずメソッド呼び出しの際にコピーされるのは、  
+配列の内容(1, 2, 3)ではなく配列の先頭要素のアドレス(8832番地)である。  
+すると、mainメソッド内の変数arrayとprintArrayメソッド内の引数arrayは、  
+どちらも同じ8832番地以降の配列の実体を参照した状態になる。
+
+現在8832番地を先頭とした配列の内容は(1, 2, 3)である。  
+ここでprintArrayメソッド内で`array[0]`に100を代入したらどうなるか。
+
+8832番地にある配列の要素が100に書き換わる。  
+この状態でprintArrayメソッドが終了した後、  
+mainメソッド内で`array[0]`を取り出したらどうなるだろうか。  
+8832番地にある要素の値、つまり100を取り出すことになる。
+
+今回の配列のように、引数としてアドレスを渡すことを参照渡しという。  
+参照渡しを行うと、呼び出した先で加えた変更が呼び出し元にも影響するようになる。  
+
+まとめると、配列をメソッドで渡すと
+- 呼び出し元の配列アドレスが、呼び出し先の引数にコピーされる。
+- 呼び出し先で配列の実体を書き換えると、呼び出し元にも影響する。
+
+それを体験できるサンプルコードが以下のとおり  
+(chapter05/code05-10/src/Main.java)
+```
+public class Main{
+    // int型配列を受け取り、配列内の要素全てに1を加えるメソッド
+    public static void incArray(int[] array){
+        for(int i = 0; i < array.length; i++){
+            array[i]++;
+        }
+    }
+
+    public static void main(String[] args) {
+        int[] array = {1, 2, 3};
+        incArray(array);
+        for(int i : array){
+            System.out.println(i);
+        }
+    }
+}
+```
+
+#### 6-3. 戻り値に配列を用いる
+
+引数と同様に、戻り値にも配列を使用できる。
+
+```
+public class Main {
+    public static int[] makeArray(int size){
+        int[] newArray = new int[size];
+        for(int i = 0; i < newArray.length; i++){
+            newArray[i] = i;
+        }
+        return newArray;
+    }
+
+    public static void main(String[] args) {
+        int[] array = makeArray(3);
+        for(int i : array){
+            System.out.println(i);
+        }
+    }
+}
+```
+
+流れとしては以下のとおり
+
+1. `makeArray(3)`でmakeArrayメソッドに3を値渡しする。
+2. makeArrayメソッドの引数であるsizeに3をコピーして処理を行う。
+3. `return newArray;`で配列の先頭要素のアドレスを戻す。（ここでは8832番地とする）
+4. 上記で戻ってきた配列の先頭要素のアドレス（ここでは8832番地）を配列変数arrayに代入する。
+5. mainメソッドの処理の続きを行う。
+
+`return newArray;`によって、配列の先頭要素のアドレスがmainメソッドに戻される。  
+mainメソッド側では、それを自身で宣言した配列変数arrayに代入している。  
+その結果、makeArrayメソッドで作成された配列を参照できるようになる。
