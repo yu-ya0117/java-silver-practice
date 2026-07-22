@@ -742,7 +742,7 @@ public class Main{
 #### 6-3. 戻り値に配列を用いる
 
 引数と同様に、戻り値にも配列を使用できる。
-
+(chapter05/code05-11/src/Main.java)
 ```
 public class Main {
     public static int[] makeArray(int size){
@@ -773,3 +773,53 @@ public class Main {
 `return newArray;`によって、配列の先頭要素のアドレスがmainメソッドに戻される。  
 mainメソッド側では、それを自身で宣言した配列変数arrayに代入している。  
 その結果、makeArrayメソッドで作成された配列を参照できるようになる。
+
+### 7. コマンドライン引数
+
+mainメソッドの冒頭に`public static void main(String[] args)`という記述がある。  
+
+通常のメソッドの場合、仮引数に入ってくる値は、  
+呼び出し元のメソッドが指定した実引数である。  
+しかし上記のmainメソッドには呼び出し元のメソッドがない。  
+mainメソッドには、一体「誰が」「どんな」引数を渡しているのか。
+
+実はJavaプログラムを起動する際、  
+さまざまな「追加情報」を指定して起動することができる。  
+このプログラム起動時の追加情報をコマンドライン引数と呼ぶ。
+
+JDKのjavaコマンドを使ってプログラムを実行する方法では、  
+次のようにプログラム名の後ろにコマンドライン引数を指定できる。
+
+コマンドライン引数を利用したJavaプログラムの起動
+```
+java プログラム名 引数リスト
+```
+このとき引数リストは()で括らず、半角スペースで記述する。
+
+コマンドライン引数を利用して「Hello World」を出力するプログラム  
+(chapter05/code05-12/src/Main.java)
+```
+public class Main {
+    public static void main(String[] args) {
+        System.out.println(args[0] + " " + args[1]);
+    }
+}
+```
+
+srcフォルダ内で `java -cp ../bin Main Hello World`として起動すると以下のようになる。
+
+```
+Hello World
+```
+
+プログラムが起動すると、JVMは半角スペースで区切られた情報の1つ1つを配列に詰め込んで実変数とし、  
+mainメソッドを起動する。
+
+上記の例では、コマンドライン引数として`Hello World`を指定して、  
+`args[0]`には「Hello」が、`args[1]`には「World」が格納される。  
+args.lengthは2になる。
+
+以上をまとめると、  
+プログラム時に指定したコマンドライン引数が、  
+JVMによって変換され、  
+mainメソッド起動時に渡される。
