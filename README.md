@@ -39,6 +39,7 @@ Java Silver取得とSpring Boot学習準備のための学習リポジトリで�
 | 2026/07/20 | chapter05 | 戻り値、オーバーロード、一部のサンプルコードを追加                                       |
 | 2026/07/21 | chapter05 | 引数や戻り値に配列を用いる、一部のサンプルコードを追加 |
 | 2026/07/22 | chapter05 | コマンドライン引数、一部のサンプルコードを追加 |
+| 2026/07/23 | chapter05 | まとめ、練習問題 |
 
 ## 学習状況
 - [x] ~chapter00~
@@ -46,7 +47,7 @@ Java Silver取得とSpring Boot学習準備のための学習リポジトリで�
 - [x] ~chapter02~
 - [x] ~chapter03~
 - [x] ~chapter04~
-- [ ] chapter05
+- [x] ~chapter05~
 - [ ] chapter06
 - [ ] chapter07
 - [ ] chapter08

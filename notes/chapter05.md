@@ -1,6 +1,6 @@
 # 第5章
 
-学習日: 2026-07-16 〜 (現在学習中)
+学習日: 2026-07-16 〜 2026-07-23
 
 ## 学んだこと
 
@@ -24,13 +24,13 @@
 - オーバーロード
 - 引数や戻り値に配列を用いる
   - 引数に配列を用いる
-  - 値渡しと参照渡し
+  - 値渡しと参照型
   - 戻り値に配列を用いる
 - コマンドライン引数
 
 ## 詰まったこと
 変数のスコープとローカル変数の有効範囲の説明
-引数の参照渡しの取り扱いは要注意！
+参照型の引数の取り扱いは要注意！
 
 ## 用語集 & 補足
 
@@ -45,7 +45,9 @@
 - オーバーロード：同じ名前のメソッドを定義すること。
 - シグネチャ：メソッド宣言に記述するメソッド名・引数の個数・引数の型・引数の並び順の総称。
 - 値渡し：メソッドに値そのものが渡される呼び出し方。
-- 参照渡し：メソッドの引数としてアドレスを渡す呼び出し方。
+  - Javaではすべて値渡しである。
+- 参照値：配列やオブジェクトなどの参照型の実体を参照するための値。
+  - 参照型を引数に渡す場合、この参照値がコピーされる。
 - コマンドライン引数：Javaプログラム起動時に指定できる追加情報のこと。
 
 ### 2. メソッドとは
@@ -657,7 +659,12 @@ public class Main {
 }
 ```
 
-#### 6-2. 値渡しと参照渡し
+#### 6-2. 値渡しと参照型
+
+※Javaのメソッド呼び出しでは、基本型・参照型を問わず、すべて値渡しである。
+
+ただし、配列などの参照型の場合、変数に格納されている「参照値」がコピーされてメソッドに渡される。  
+そのため、呼び出し元と呼び出し先の変数が同じ配列を参照する状態になる。
 
 配列の部分でも紹介したように、int[]型のような配列型の変数には、  
 配列の実体を指し示すメモリの番地が格納されている。  
@@ -711,8 +718,13 @@ public static void printArray(int[] array){   // 8832番地を参照する
 mainメソッド内で`array[0]`を取り出したらどうなるだろうか。  
 8832番地にある要素の値、つまり100を取り出すことになる。
 
-今回の配列のように、引数としてアドレスを渡すことを参照渡しという。  
-参照渡しを行うと、呼び出した先で加えた変更が呼び出し元にも影響するようになる。  
+配列を引数として渡す場合も、Javaでは値渡しである。
+
+ただし、配列変数に格納されている参照値がコピーされるため、  
+呼び出し元と呼び出し先の変数は同じ配列の実体を参照する。
+
+そのため、呼び出し先で配列の要素を書き換えると、  
+呼び出し元から参照した場合にも変更後の値が確認できる。  
 
 まとめると、配列をメソッドで渡すと
 - 呼び出し元の配列アドレスが、呼び出し先の引数にコピーされる。
@@ -812,7 +824,7 @@ srcフォルダ内で `java -cp ../bin Main Hello World`として起動すると
 Hello World
 ```
 
-プログラムが起動すると、JVMは半角スペースで区切られた情報の1つ1つを配列に詰め込んで実変数とし、  
+プログラムが起動すると、JVMは半角スペースで区切られた情報の1つ1つを配列に詰め込んで実引数とし、  
 mainメソッドを起動する。
 
 上記の例では、コマンドライン引数として`Hello World`を指定して、  
@@ -823,3 +835,118 @@ args.lengthは2になる。
 プログラム時に指定したコマンドライン引数が、  
 JVMによって変換され、  
 mainメソッド起動時に渡される。
+
+## まとめ
+
+- メソッド
+  - メソッドを使ってプログラムを部品化できる。
+  - クラスブロックの中にメソッド定義を宣言できる。
+- 引数
+  - メソッド呼び出しときに、引数として値を渡すことができる。
+  - メソッドを呼び出すときに渡す値を実引数、受け取る変数を仮引数という。
+  - メソッド内で宣言した変数はローカル変数といい、ほかのメソッドからは使用できない。
+  - また、そのメソッドの実行が終了すると、ローカル変数は消滅する。
+- 戻り値
+  - return文を使用してメソッドの呼び出し元へ値を返すことができる。
+  - 戻す値の型はメソッド定義で宣言する必要がある。
+  - 戻り値を受け取るには、代入演算子の「=」を使用する。
+- メソッドの活用
+  - 仮引数の数と型が異なれば同名のメソッドを定義できる。これをオーバーロードという。
+  - 配列を渡すとき、あるいは戻すときは、配列そのものではなく、配列のアドレスを渡している。
+    - Javaはすべて値渡し。参照型では「参照値」を値渡しする。
+  - コマンドライン引数を用いて、さまざまな追加情報を指定してJavaプログラムを起動できる。
+
+## 練習問題
+
+### 練習5-1
+
+chapter05/practice05-01/src/Main.java
+```
+public class Main {
+    public static void introduceOneself(){
+        String name = "Hiroya Nagano";
+        int age = 40;
+        double height = 168.7;
+        String zodiac = "寅";
+        System.out.println("私の名前は" + name + "です。");
+        System.out.println("歳は" +age + "歳です。");
+        System.out.println("身長は" + height + "cmです。");
+        System.out.println("十二支は" + zodiac + "です。");
+
+    }
+
+    public static void main(String[] args) {
+        introduceOneself();
+    }
+}
+```
+
+### 練習5-2
+
+chapter05/practice05-02/src/Main.java
+```
+public  class Main {
+    public static void email(String title, String address, String text){
+        System.out.println(address + "に、以下のメールを送信しました");
+        System.out.println("件名：" + title);
+        System.out.println("本文：" + text);
+    }
+
+    public static void main(String[] args)
+    {
+        String title = "お誘い";
+        String address = "dummy@example.com";
+        String text = "今度、飲みにいきませんか";
+        email(title, address, text);
+    }
+}
+```
+
+### 練習5-3
+
+chapter05/practice05-03/src/Main.java
+```
+public  class Main {
+    public static void email(String title, String address, String text){
+        System.out.println(address + "に、以下のメールを送信しました");
+        System.out.println("件名：" + title);
+        System.out.println("本文：" + text);
+    }
+
+    public static void email(String address, String text){
+        System.out.println(address + "に、以下のメールを送信しました");
+        System.out.println("件名：無題");
+        System.out.println("本文：" + text);
+    }
+
+    public static void main(String[] args) {
+        String address = "dummy@example.com";
+        String text = "今度、飲みにいきませんか";
+        email(address, text);
+    }
+}
+```
+
+### 練習5-4
+
+chapter05/practice05-04/src/Main.java
+```
+public class Main {
+    public static double calcTriangleArea(double bottom, double height){
+        double area = bottom * height / 2;
+        return area;
+    }
+
+    public static double calcCircleArea(double radius){
+        double area = radius * radius * 3.14;
+        return area;
+    }
+    
+    public static void main(String[] args) {
+      double triangleArea = calcTriangleArea(10.0, 5.0);
+      System.out.println("三角形の面積は、" + triangleArea + "平方cm");
+      double circleArea = calcCircleArea(5.0);
+      System.out.println("円の面積：" + circleArea + "平方cm");
+    }
+}
+```
