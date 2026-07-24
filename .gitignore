@@ -8,4 +8,6 @@ out/
 # macOS
 .DS_Store
 
-**/bin/
+# Java compiled files
+*.class
+bin/
