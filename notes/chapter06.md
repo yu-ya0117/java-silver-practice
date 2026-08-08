@@ -791,3 +791,148 @@ Javaのプログラムは「世界中の様々な人が作ったクラス」を�
 今回のようなテストプログラムなどでは簡易的なパッケージ名をつけてもよいが、  
 正式なプログラムのクラスには、この命名規則に従ったパッケージ名をつけよう。  
 もしかしたら、自分が作って公開するクラスも、世界中の誰かが利用する日が来るかもしれない。
+
+### 7. Java APIについて学ぶ
+
+#### 7-1. 世界中の人々の協力で完成していたHelloWorld
+
+chapter00/code00-01/src/Main.javaで「Hello World」を出力するプログラムを書いて動かしたと思う。
+
+```
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
+}
+```
+
+一見シンプルなプログラムのように見えるが、  
+このHelloWorldプログラムは、**実は1つのクラスだけでできているわけではない**。  
+自分たちが作成したクラスは1つだけだが、実際には多くのクラスから成り立っている。  
+
+ここで試しにjavaコマンドに特殊なオプションを指定してHello Worldプログラムを実行してみる。
+
+```
+java -verbose:class Main      
+[0.008s][info][class,load] java.lang.Object source: shared objects file
+[0.008s][info][class,load] java.io.Serializable source: shared objects file
+[0.008s][info][class,load] java.lang.Comparable source: shared objects file
+[0.008s][info][class,load] java.lang.CharSequence source: shared objects file
+[0.008s][info][class,load] java.lang.constant.Constable source: shared objects file
+（以下略）
+[0.023s][info][class,load] Main source: file:/Users/hiron/IdeaProjects/java-silver-practice/chapter00/code00-01/bin/
+（以下略）
+```
+
+実行する環境やJVMのバージョンによって多少の違いはあるが、  
+数百行の[class,load] 〜.〜.〜が出てきたかと思う。  
+表示されたのは、Hello Worldプログラムを動かすためにJVMに読み込まれたクラスの完全限定クラス名である。  
+
+つまり、Hello Worldプログラムとは、  
+**自分で作った1つのクラスが他のクラスと数百個のクラスと連携して動く多数のクラスからなるプログラム**である。
+
+自分で作ったMainクラス以外の他にどういうクラスが連携して動いているのか。  
+代表的なパッケージをいくつか紹介する。
+
+1. java.utilパッケージ
+2. java.langパッケージ
+3. java.ioパッケージ  
+etc.  
+
+上記のような自分たちが作ったクラスを除く他の数百個のクラスは、  
+Javaに初めから存在するクラスであり、  
+それらはAPI(Application Programming Interface)と総称されている。
+
+JavaではAPIとしておよそ200を超えるパッケージ、3,500を超える多くのクラスが標準提供されている。  
+自分たちプログラム開発者は、それらのクラスをいつでも自由に使用することができる。  
+
+例えば「5個の要素を持つint配列」に入っている5個の整数を並び替えるプログラムを開発する場面を想定する。  
+並び替えロジックを自力で開発するのは少し大変だが、  
+わざわざ自分たちで開発しなくてもAPIとして準備されている命令を呼び出せばすぐさま解決できる。
+
+chapter06/code06-05/src/Main.java
+```
+import java.util.Arrays;    // 今回はArraysクラスをインポート
+
+public class Main {
+    public static void main(String[] args) {
+        int[] heights = {172, 149, 152, 191, 155};
+        Arrays.sort(heights);   // 昇順に並び替え
+        for(int h : heights){
+            System.out.println(h);
+        }
+    }
+}
+```
+
+このコードは、「java.utilパッケージのArraysクラス」をインポートし、  
+「インポートしたArraysクラスにあるsortメソッド」を呼び出している。  
+これを見れば、「java.util.Arraysは標準で提供するAPIの一部であること」が理解できると思う。
+
+実際にAPIに含まれる3,500を超えるクラスは、  
+それぞれのクラスファイル(Arrays.classなど)の形で、  
+JDKをインストールしたときにコンピュータに保存されている。  
+これらのクラスファイルも、Hello Worldプログラムを作った時と同じように、  
+Java言語を作った人たちがソースコードを書いてコンパイルして作ったものである。
+
+自分たちは気づかないうちに、  
+世界中の人たちが作った数百個のクラスと連携するクラスを作って動かすという、  
+世界をまたにかけた開発をしていたことになる。  
+スケールの大きい話である。
+
+#### 7-2. APIで提供されるパッケージ
+
+APIには非常にたくさんのパッケージとクラスが含まれているが、  
+APIのクラスには「java.」または「javax.」で始まるもパッケージが利用できる。  
+以下はその代表的なAPIになる。
+
+<table>
+  <tr>
+    <td>java.lang</td>
+    <td>Javaプログラミングに欠かせない重要なクラス群</td>
+  </tr>
+  <tr>
+    <td>java.util </td>
+    <td>Javaプログラミングを便利にするさまざまなクラス群</td>
+  </tr>
+  <tr>
+    <td>java.math </td>
+    <td>数学に関するクラス群</td>
+  </tr>
+  <tr>
+    <td>java.net </td>
+    <td>ネットワーク通信などを行うためのクラス群</td>
+  </tr>
+  <tr>
+    <td>java.io </td>
+    <td>ファイルの読み書きなど、データを逐次処理するためのクラス群</td>
+  </tr>
+</table> 
+
+特に、java.langパッケージに属するクラスは頻繁に利用するものが多いので、  
+import文を記述しなくても自動的にインポートされるという特別な扱いを受けている。  
+java.langパッケージに属する代表的なクラスは、  
+System、Integer、Math、Object、String、Runtimeなどがある。
+
+#### 7-3.APIリファレンスの読み方
+
+Javaが提供する膨大な数のAPIクラスにどのようなクラスが含まれていて、  
+どのようなメソッドを持っているかを調べるには、  
+APIリファレンスと呼ばれるAPIの説明書を読む必要がある。  
+「Java API 仕様 (バージョン数)」などのキーワード検索すると、  
+Oracle Help CenterのWebページが見つかり、  
+例えばバージョンが21の場合だと、「概要 (Java SE 21 & JDK 21)」をクリックすると、  
+Javaのそのバージョンにおけるモジュールやパッケージの一覧を見ることができる。  
+
+[![Image from Gyazo](https://i.gyazo.com/7ce69ed5cd7de60a057ffcd3b5fe612d.png)](https://gyazo.com/7ce69ed5cd7de60a057ffcd3b5fe612d)
+
+画像は概要 (Java SE 21 & JDK 21)のトップーページである。  
+一覧を辿りながらクラスを探したい場合は、まずは「java.base」モジュールを選択し、  
+その後、パッケージやクラスを選択していく。  
+クラスの説明には、概要のほか、そのクラスが持つメソッドやその引数、戻り値の詳細が詳細に解説されている。  
+
+[![Image from Gyazo](https://i.gyazo.com/9dacef10d23a9a806fba087b1d70cd80.png)](https://gyazo.com/9dacef10d23a9a806fba087b1d70cd80)
+
+画像は、java.utilパッケージのScannerクラスの解説の冒頭である。  
+下の方にスクロールしていくと、nextIntやnextLineの詳しい使い方が解説されている。  
+他にも数多くのメソッドを持っている。
