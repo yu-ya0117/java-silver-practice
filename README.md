@@ -50,6 +50,7 @@ Java Silver取得とSpring Boot学習準備のための学習リポジトリで�
 | 2026/08/03 | chapter06 | Java APIを学ぶ                                                     |
 | 2026/08/05 | chapter06 | Java APIを学ぶ                                                     |
 | 2026/08/08 | chapter06 | Java APIを学ぶ                                                     |
+| 2026/08/09 | chapter06 | まとめ、練習問題 |
 
 ## 学習状況
 - [x] ~chapter00~
@@ -58,7 +59,7 @@ Java Silver取得とSpring Boot学習準備のための学習リポジトリで�
 - [x] ~chapter03~
 - [x] ~chapter04~
 - [x] ~chapter05~
-- [ ] chapter06
+- [x] ~chapter06~
 - [ ] chapter07
 - [ ] chapter08
 - [ ] chapter09

@@ -1,6 +1,6 @@
 # 第6章
 
-学習日: 2026-07-24 〜 （現在学習中）
+学習日: 2026-07-24 〜 2026-08-09
 
 ## 学んだこと
 
@@ -936,3 +936,145 @@ Javaのそのバージョンにおけるモジュールやパッケージの一�
 画像は、java.utilパッケージのScannerクラスの解説の冒頭である。  
 下の方にスクロールしていくと、nextIntやnextLineの詳しい使い方が解説されている。  
 他にも数多くのメソッドを持っている。
+
+## まとめ
+
+- クラスの分割
+  - 複数のクラスで1つのプログラムを構成できる。
+  - 別のクラスのメソッドを呼び出す場合は、`クラス名.メソッド名`と指定する。
+  - Javaプログラムの完成像は、複数のクラスファイルの集合体である。
+  - mainメソッドを含むクラスのFQCNを指定してjavaコマンドで起動する。
+- パッケージ
+  - package文を用いて、クラスをパッケージに所属できる。
+  - import文を使うと、コード中のFQCNを省略できる。
+- クラスローダーの動作
+  - クラスローダーは、読み込み対象のFQCNに基づき、クラスパスを基準としてパッケージ階層に従ったフォルダ構造を探し、読み込む。
+  - コンパイルして生成したクラスファイルは、実行時にクラスローダーが見つけられるように、適切なフォルダに配置しなければならない。
+- API
+  - Javaにあらかじめ添付されている多数のクラス群をAPIという。
+  - APIは通常、「java.」または「javax.」で始まるパッケージ名を用いる。
+  - java.langパッケージに属するクラスは自動的にインポートされる。
+  - APIに用意されているクラスは、APIリファレンスで調べることができる。
+
+## 練習問題
+
+### 練習6-1
+
+chapter06/practice06-01/src/Main.java
+```
+import comment.Zenhan;
+
+public class Main {
+    public static void main(String[] args) {
+        try {
+            Zenhan.doWarusa();
+            Zenhan.doTogame();
+            comment.Kouhan.callDeae();
+            comment.Kouhan.showMondokoro();
+        } catch (Exception e){
+            System.out.println("エラーが発生しました。プログラムを終了します。");
+        }
+    }
+}
+```
+※throws Exceptionはここでは考えないものとすると書いてあるが、  
+try-catch文を書かないとコンパイルエラーになるため記載が必要。
+
+chapter06/practice06-01/src/comment/Zenhan.java
+```
+package comment;
+
+public class Zenhan {
+    public static void doWarusa(){
+        System.out.println("きなこでござる。食えませんがの。");
+    }
+
+    public static void doTogame(){
+        System.out.println("この老いぼれの目はごまかせんぞ。");
+    }
+}
+```
+
+chapter06/practice06-01/src/comment/Kouhan.java
+```
+package comment;
+
+public class Kouhan{
+    public static void callDeae(){
+        System.out.println("えぇぃ、こしゃくな。くせ者だ！であえい！");
+    }
+
+    public static void showMondokoro() throws Exception {
+        System.out.println("飛車さん、角さん。もういいでしょう。");
+        System.out.println("この紋所が目にはいらぬか！");
+        Zenhan.doTogame();     // もう一度、とがめる
+    }
+}
+```
+
+### 練習6-2
+
+練習6-1のコンパイルと実行
+
+/Users/(ユーザー名)/IdeaProjects/java-silver-practiceにいる場合
+```
+cd chapter06/practice06-01/src
+javac -d ../bin Main.java comment/Zenhan.java comment/Kouhan.java
+java -cp ../bin Main
+```
+
+以下実行結果
+```
+java -cp ../bin Main
+きなこでござる。食えませんがの。
+この老いぼれの目はごまかせんぞ。
+えぇぃ、こしゃくな。くせ者だ！であえい！
+飛車さん、角さん。もういいでしょう。
+この紋所が目にはいらぬか！
+この老いぼれの目はごまかせんぞ。
+```
+
+### 練習6-3
+
+chapter06/practice06-03/src/comment/Kouhan.java
+```
+package comment;
+
+public class Kouhan{
+    public static void callDeae(){
+        System.out.println("えぇぃ、こしゃくな。くせ者だ！であえい！");
+    }
+
+    public static void showMondokoro() throws Exception {
+        System.out.println("飛車さん、角さん。もういいでしょう。");
+        System.out.println("この紋所が目にはいらぬか！");
+        Thread.sleep(3000);     // 3秒間一時停止
+        Zenhan.doTogame();      // もう一度、とがめる
+    }
+}
+```
+
+### 練習6-4
+
+Windowsの環境変数CLASSPATHとして「c:¥work¥ex64」が指定されている場合、  
+デフォルトパッケージに属しているMainクラスはex64フォルダの直下に配置する。  
+Zenhanクラス、Kouhanクラスは、commentパッケージに属しているので、  
+ex64の中にcommentフォルダを作成し、その中にZenhan.classとKouhan.classを配置する。
+
+よって、java Mainで実行するためには、  
+
+Mainクラス → c:¥work¥ex64フォルダ  
+Zenhanクラス → c:¥work¥ex64¥commentフォルダ  
+Kouhanクラス → c:¥work¥ex64¥commentフォルダ
+
+以上の場所に各クラスファイルを配置する必要がある。
+
+### 練習6-5
+
+Zenhan.classが「c:¥javaapp¥koumon¥comment」に存在することから、  
+Kouhan.classは同じフォルダ内に存在しており、  
+Main.classは、「c:¥javaapp¥koumon」に存在している。  
+
+ここで、java Mainというコマンドを実行すると、  
+練習6-3のプログラムが実行することから、
+環境変数CLASSPATHとして指定されているのは「c:¥javaapp¥koumon」である。
