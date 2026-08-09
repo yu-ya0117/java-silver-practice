@@ -1,0 +1,1080 @@
+# 第6章
+
+学習日: 2026-07-24 〜 2026-08-09
+
+## 学んだこと
+
+- ソースファイルを分割する
+  - 1つのソースファイルによる開発の限界
+  - 計算機プログラムを分割しよう
+- 複数のクラス構成されるプログラム
+  - 複数クラスのコンパイル
+  - Javaプログラムの完成品
+  - プログラムの実行方法
+- パッケージを利用する
+  - クラスが増えすぎたらどうする？
+  - パッケージを含むクラス名を指定する
+  - 完全指定クラス名の入力を省略する
+- パッケージに属したクラスの実行方法
+  - クラス名だけでクラスファイルを探し出す仕組み
+  - クラスパスの指定方法
+  - クラスパスで指定できる対象
+  - クラスファイルの正しい配置
+- 名前空間
+  - パッケージを使うもう1つのメリット
+  - パッケージ名の衝突を避ける方法
+- Java APIについて学ぶ
+  - 世界中の人々の協力で完成していたHelloWorld
+  - APIで提供されるパッケージ
+  - APIリファレンスの読み方
+
+## 詰まったこと
+
+- クラスローダーやクラスパスとは何かを説明すること
+- パッケージを利用したコンパイル方法
+- javaコマンドの実行方法
+
+## 用語集 & 補足
+
+### 1. 用語
+
+- JARファイル:JARはJava ARchiveの略。Javaにおける、複数のクラスファイルを1つにまとめるファイル形式。
+  - ZIPファイルによく似たアーカイブファイル。
+- パッケージ：クラスファイルをグループに所属させて、分類・管理できる仕組み。
+  - デフォルトパッケージ：package文がなく、どのパッケージにも所属していない状態。無名パッケージとも呼ばれる。
+- 完全限定クラス名(FQCN)：Full qualified class nameの略。
+  - パッケージ名を頭につけた完全なクラス名のこと。
+  - 完全就職クラス名とも呼ばれる。
+- import文:FQCNの入力の手間を軽減するための宣言文
+- クラスローダー：JVMがプログラム実行時に必要なクラスファイルをメモリに読み込む仕組み。
+- クラスパス：Javaプログラムを実行する際に、JVMがクラスファイルを参照するための場所を指定したもの。
+  - クラスローダーがクラスファイルを探す際に見に行くべきフォルダの場所。
+- 名前の衝突：内容が異なる別々のクラスで同じ名前を取り合うこと。
+- 名前空間：使うことができる名前の総量。
+- API：Application Programming Interfaceの略で、外部のソフトウェアが持つ機能を共有できる仕組み。
+  - JavaにおけるAPIは、初めからJavaに存在するクラスをまとめた集まり。
+- APIリファレンス：APIの説明書。JDK25では以下のリファレンスを参照。
+  https://docs.oracle.com/javase/jp/25/docs/api/index.html
+
+### 2. ソースファイルを分割する
+
+#### 2-1. 1つのソースファイルによる開発の限界
+
+chapter05では、長く複雑になってしまったmainメソッドを複数のメソッドに分割した。  
+しかし、1つのソースファイルの中に含まれるメソッド数が増えると、  
+ソースコードの全体を把握することは難しくなり、開発がしにくい。  
+
+Javaでは、1つのソースファイルに全てのメソッドを書くのではなく、  
+複数のソースファイルに分割して記述できる仕組みが存在する。  
+複数のソースファイルに分けて開発するのは、  
+複数のクラスに分けて開発するとも捉えることができる。
+
+たくさんのメソッドを複数のソースファイルに分けて記述すると、  
+整理されてわかりやすくなるだけでなく、  
+ファイルごとに開発を分担し、それぞれが並行して開発を進められる、  
+つまり分業しやすくなるというメリットもある。
+
+#### 2-2. 計算機プログラムを分割する
+
+まず以下のような計算機プログラムが存在する。
+
+chapter06/code06-01/src/Calc.java
+```
+public class Calc {
+    public static void main(String[] args) {
+        int a = 10;
+        int b = 2;
+        int total = plus(a, b);
+        int delta = minus(a, b);
+        System.out.println("足すと" + total + "、引くと" + delta);
+    }
+
+    public static int plus(int a, int b) {
+        return (a + b);
+    }
+
+    public static int minus(int a, int b) {
+        return (a - b);
+    }
+}
+```
+ここで、plus()とminus()の2つは数学的な計算処理をするメソッドであり、  
+main()はplus()とminus()を呼び出して画面に表示する役割を持つ、全体を司るメソッドである。  
+よって、まずmain()とそれ以外のメソッドの2つのクラスに分割する。
+
+#### STEP1 計算処理メソッドを記述するためのソースファイルを作成する
+
+まず、plus()やminus()といった計算ロジックのメソッドを入れるソースファイルを作成する。  
+新たなファイル名は、CalcLogic.javaにする。  
+そして、CalcLogic.javaの書きはじめは`public class CalcLogic`にする。   
+これは、ソースファイル名とクラス名を同じにする必要があるためである。
+
+#### STEP2 plus()とminus()を移動する
+
+現在Calc.javaの中にあるplus()とminus()を、  
+新たに作成したCalcLogic.javaへ移動する。
+
+chapter06/code06-02/CalcLogic.java
+```
+public class CalcLogic {
+    public int plus(int a, int b) {
+        return (a + b);
+    }
+
+    public int minus(int a, int b) {
+        return (a - b);
+    }
+}
+```
+#### STEP3 メインメソッド内の呼び出しを修正する
+
+上記までの状態の場合は、以下のようになる。
+
+```
+public class Calc {
+    public static void main(String[] args) {
+        int a = 10;
+        int b = 2;
+        int total = plus(a, b);
+        int delta = minus(a, b);
+        System.out.println("足すと" + total + "、引くと" + delta);
+    }
+}
+```
+5行目でplus()を、6行目でminus()を呼び出すが、  
+このままではコンパイルエラーを引き起こす。
+上記のCalc.javaの状態では、Calcクラス内にplus()、minus()が存在しないためである。
+
+これまでは、main()の中で`plus(a, b)`と記述すればplus()が呼び出せていたのは、
+**plus()やminus()がmain()と同じCalcクラスに属していたから**である。  
+しかし、ソースファイルの分割によって、plus()やminus()はCalcLogicクラスに属するようになったため、
+main()から呼び出すときには「CalcLogicのplus()とminus()」のように明示的に所属を示す必要がある。  
+これはmain()の中で以下のように呼び出して対応する。
+
+```
+int total = CalcLogic.plus(a, b);
+int delta = CalcLogic.minus(a, b);
+```
+
+これで無事に分割できるようになった。  
+以下が修正したCalc.javaとなる。
+
+chapter06/code06-02/src/Calc.java
+```
+public class Calc {
+    public static void main(String[] args) {
+        int a = 10;
+        int b = 2;
+        int total = CalcLogic.plus(a, b);
+        int delta = CalcLogic.minus(a, b);
+        System.out.println("足すと" + total + "、引くと" + delta);
+    }
+}
+```
+
+### 3. 複数のクラスで構成されるプログラム
+
+#### 3-1. 複数クラスのコンパイル
+
+以下はJDKを使って開発する場合を前提とする。
+
+分割したプログラムのコンパイル方法(code06-02の場合)
+
+```
+javac Calc.java CalcLogic.java
+```
+
+無事にコンパイルが終わると、
+それぞれおのソースファイルに対応したクラスファイルが生成される。
+
+#### 3-2. Javaプログラムの完成品
+
+普段使っているPCのアプリケーションに慣れ親しんでいると、  
+「Javaプログラムの完成品」のちょっと変わった姿を意外に思うかもしれない。  
+その理由は、通常のアプリケーションは大抵1つだからである。
+
+たとえばWindowsのメモ帳プログラムは、notepad.exeのような単体のファイルであって、  
+これをこれをダブルクリックすれば起動する。
+
+しかしJavaで開発されたプログラムは、  
+「複数のクラスファイルの集まり」でありであることが多く、  
+ダブルクリックで起動させるのではなく、  
+javaコマンドで起動する。  
+そのため、Javaプログラムを誰かに渡す、あるいは納品する場合には、  
+**複数のクラスが入っているフォルダをまるごと「1つの完成品」として渡す**ことになる。
+
+Javaプログラムの完成品をまとめると、  
+- Javaプログラムの完成品は、複数のクラスファイルの集合体
+- 誰かに配布する場合は、全てのクラスファイルを渡す必要がある。
+
+### 3-3. プログラムの実行方法
+
+クラスファイルがはいったファイルをまるごと受け取った場合は、  
+クラス名を指定して実行する必要がある。
+
+```
+java クラス名
+```
+
+JVMは起動時に指定されたクラスの中にあるmainメソッドをを呼び出して、  
+プログラムの実行を開始します。  
+Javaプログラムを実行する人は、  
+「渡された複数のクラスファイルのうち、mainメソッドが含まれているクラスの名前」を指定する必要がある。  
+例えばcode06-02の計算機プログラムの場合、  
+`java Calc`と入力すべきであり、  
+`java CalcLogic`では正常に動作しない。
+
+今回の計算機プログラムの場合、  
+作成者がCalcの中にmainメソッドがあって、 
+CalcLogicの中にはない事実を知っているので、  
+`java Calc`で起動できると判断できた。
+
+しかし他人が作ったJavaプログラムの場合は、  
+mainメソッドが存在するクラスの名前がわからないと起動できないことに注意！
+
+以上をまとめると、  
+複数の完成したクラスファイルを渡す場合、  
+全てのクラスファイルを渡すだけでなく、  
+「mainメソッドが含まれるクラス名」も伝える必要がある。
+
+プログラムの完成品が複数のクラスファイルになった場合、  
+そのままメールで送る際などに不便が生じる。  
+そこでJavaでは、「複数のクラスを1つに」まとめるファイル形式としてJAR(Java ARchive)が定められている。  
+JARファイルはZIPファイルとよく似たアーカイブファイルで、  
+JDKに付属するjarコマンドで作成することができる。
+
+### 4. パッケージを利用する
+
+#### 4-1. クラスが増えすぎたらどうする？
+
+現段階ではまだイメージはつかないが、  
+大規模開発になると、数百個ものクラスからなる1つのプログラムを開発することがある。
+しかし、クラスの数が20個を超える規模になってくると管理も大変になってくる。
+
+そこでJavaには、パッケージというグループに所属させて、  
+分類・管理ができる仕組みが備わっている。
+
+感覚としては、
+
+mainの行数が増えたら複数メソッドに分割
+
+↓
+
+メソッド数が増えたら複数クラスに分割
+
+↓
+
+クラス数が増えたら複数パッケージに分割
+
+というイメージである。
+
+ここではcode06-02でも触れた計算機プログラムについて、  
+パッケージを利用してみる。
+クラスをパッケージに所属させるためには、  
+そのクラスのソースコードの先頭にpackage文を記述する
+
+```
+package 所属させたいパッケージ名;
+```
+
+たとえば、計算機プログラムを2つのパッケージに所属させた場合は以下のように記述する
+
+1. Calcをcalcapp.mainに所属させる
+```
+package calcapp.main;
+public class Calc{
+  // 処理内容
+}
+```
+※ただし上記の状態ではコンパイルエラーが発生する。
+
+2. CalcLogicをcalcapp.logicsに所属させる
+```
+package calcapp.logics;
+public class CalcLogic{
+  // 処理内容
+}
+```
+※上記の状態ではコンパイルが通っていればOK。
+
+パッケージの名前はJavaの識別子のルールに従っていれば自由に定めることはできるが、  
+アルファベットは小文字にするのが一般的である。  
+また、「calcapp.main」や「calcapp.logics」のように、  
+ドットで区切ったパッケージ名も多く見られる。
+
+なお、「calcapp.main」や「calcapp.logics」という2つのパッケージ名を見て、  
+「共通のcalcappパッケージに所属するmainとlogicsという子パッケージで、同じグループである」という感覚を抱いてしまうかもしれないが、  
+両者に相互にまったく関係はない、独立したパッケージである。  
+パッケージの中にパッケージを入れることはできず、  
+パッケージに親子関係や階層関係は存在しない。
+
+[![Image from Gyazo](https://i.gyazo.com/5ae2bcf0f41f0a8a8b2fdb2920a7113d.png)](https://gyazo.com/5ae2bcf0f41f0a8a8b2fdb2920a7113d)
+
+code06-01とcode06-02で作成してきたクラスにはpackage文が存在しなかった。  
+どのパッケージにも所属していない状態を「無名パッケージに所属している」、  
+あるいは「デフォルトパッケージに所属している」と表現する場合がある。  
+このデフォルトパッケージに所属するクラスは、import文でインポートすることができない。
+
+#### 4-2. パッケージを含むクラス名を指定する
+
+ここまで2つのクラスを別のパッケージに所属させることができました。  
+しかし、このままコンパイルするとCalc.javaの2つの行に構文エラーが発生する。
+
+```
+int total = CalcLogic.plus(a, b);
+int delta = CalcLogic.minus(a, b);
+```
+
+Calcクラスにあるこの2行は、それぞれ「CalcLogic」クラスを利用しようとしている。  
+しかし、この書き方では、「どのパッケージのCalcLogicクラスか」を明示していないため、  
+Calcクラスは自分と同じパッケージ(calcapp.mainパッケージ)に所属するCalcLogicクラスを呼び出そうとして失敗する。
+
+別のパッケージに所属しているクラスを利用するには、
+所属パッケージ名を添えたクラス名を上記2行に指定する必要がある。
+
+所属パッケージ名を添えたクラス名を上記2行に指定すると以下のようになる。
+
+chapter06/code06-03/src/calcapp/main/Calc.java
+```
+package calcapp.main;
+
+public class Calc {
+    public static void main(String[] args) {
+        int a = 10;
+        int b = 2;
+        int total = calcapp.logics.CalcLogic.plus(a, b);
+        int delta = calcapp.logics.CalcLogic.minus(a, b);
+        System.out.println("足すと" + total + "、引くと" + delta);
+    }
+}
+```
+※コンパイルは可能だが、実行方法は後述。
+
+このように、あるクラスから別のパッケージを利用する場合、  
+「パッケージ名を頭につけた完全なクラス名」を使う必要がある。  
+この完全なクラス名のことを完全限定クラス名、  
+または完全修飾クラス名(full qualified class name、略してFQCN)という。
+
+完全限定クラス名(FQCN)は以下で表現する
+```
+パッケージ名.クラス名
+```
+
+ところで、どうやってコンパイルするの？
+
+現在chapter06/code06-03/srcフォルダにいるとすると、コンパイル例は
+
+```
+javac -d ../bin calcapp/main/Calc.java calcapp/logics/CalcLogic.java
+```
+これでコンパイルすると、
+```
+chapter06/code06-03/bin/calcapp/main/Calc.class
+chapter06/code06-03/bin/calcapp/logics/CalcLogic.class
+```
+この2つのクラスファイルが出来上がる。
+
+#### 4-3. 完全指定クラス名の入力を省略する
+
+今度はimport文を使う方法を説明する。
+
+Calcクラスにおいて、以下の部分でFQCNを使用している。
+```
+int total = calcapp.logics.CalcLogic.plus(a, b);
+int delta = calcapp.logics.CalcLogic.minus(a, b);
+```
+`calcapp.logics.CalcLogic`という長い完全限定クラス名(FQCN)を2か所使用している。  
+現時点では2か所で済んでいるが、  
+将来プログラムが大きくなったらこの長いFQCNを何度もコードの中に入力する必要が出てくる。
+このような場合はimport文を使用してFQCNの入力の手間を軽減することができる。
+
+FQCNの入力の手間を省くための宣言(import文の使用方法)
+```
+import パッケージ名.クラス名
+```
+※import文はソースコードの先頭に、ただしpackage文より後に記述する。
+
+import文を記述すると、Calc.javaは以下のようになる。  
+(chapter06/code06-04/src/calcapp/main/Calc.java)
+```
+package calcapp.main;
+import calcapp.logics.CalcLogic;
+
+public class Calc {
+    public static void main(String[] args) {
+        int a = 10;
+        int b = 2;
+        int total = CalcLogic.plus(a, b);
+        int delta = CalcLogic.minus(a, b);
+        System.out.println("足すと" + total + "、引くと" + delta);
+    }
+}
+```
+※現段階ではコンパイルができていればOK。実行方法は後述。
+
+ここで2行目のimport文に注目。  
+この文は「このソースコードでCalcLogicという表記があったら、  
+それはcalcapp.logics.CalcLogicのことだと解釈してください」という指示である。  
+頻繁に利用するクラスはimoprt文でインポートしておくと、  
+完全限定クラス名を毎回指定する必要がなくなる。
+
+仮にcalcapp.logicsパッケージに所属する全てのクラスをインポートしたい場合は、  
+以下のような記述も可能である。
+```
+package calcapp.main;
+import calcapp.logics.*;
+
+public class Calc {
+  // 処理内容
+}
+```
+ただし、`import calcapp.*;`とは記述できない。  
+`calc.app.main`と`calc.app.logics`に所属する全てのクラスを一度にはインポートできない。  
+なぜなら、`calc.app.main`と`calc.app.logics`、そして`calcapp`は全く異なるパッケージであり、  
+親子関係にはないため。  
+`import calcapp.*;`と記述した場合には、`calcapp`に所属する全てのクラスのみがインポートされる。  
+`calc.app.main`と`calc.app.logics`に所属する全てのクラスをインポートする場合には、  
+以下のように表現される。
+
+```
+import calcapp.main.*;
+import calcapp.logics.*;
+```
+
+ここで気をつけたいのは、import宣言はあくまで「入力軽減機能」であること。  
+Java以外の言語では、「include命令」(Cなど)や「require命令」(Rubyなど)で新しい機能を有効化する命令があるが、  
+Javaのimport文は、これらとは全く違う働きをする。
+
+Javaは特別な宣言をせずとも、JVMが扱える全てのクラスを最初から使うことができる。  
+ただし、その利用には必ずFQCNを指定しなければいけない。  
+**import文はあくまでもFQCNの記述を省略して手間を軽減するため**(開発者が楽をするため)の構文にすぎない。  
+importしたからと言って利用できるクラスやメソッド、その他の機能が増えることはない。
+
+### 5. パッケージに属したクラスの実行方法
+
+#### 5-1. 実行クラス名の正しい指定
+
+これまでの流れでpackage文を使ってクラスをパッケージに所属させる方法を学んできた。   
+Calcクラスは「calcapp.main」、CalcLogicクラスはそれぞれ「calcapp.logics」という別々のパッケージに所属させることができた。  
+コンパイルも正常に通っている。
+
+しかし完成したCalcクラスをいざ実行させようとすると、次のようなエラーになる。
+
+```
+java Calc
+エラー: メイン・クラスCalcを検出およびロードできませんでした
+原因: java.lang.ClassNotFoundException: Calc
+```
+
+```
+java -cp ../bin Calc
+エラー: メイン・クラスCalcを検出およびロードできませんでした
+原因: java.lang.ClassNotFoundException: Calc
+```
+両方とも、「ClassNotFoundException」というエラーで、  
+これは後述の「クラスファイルの正しい配置」で説明する。  
+
+ここでは、「NoClassDefFoundError」が出た場合について説明する。  
+直訳すると「クラス定義が見つからない」というエラーである。
+これらのjavaコマンドには問題点があるため、JVMは正しくプログラムを起動できない。  
+
+1. そもそも起動しようとしているクラスの指定が間違っている
+パッケージをりようできるようになった今は、  
+javaのより正確な構文を理解する必要がある。
+
+```
+java 起動したいクラスの完全限定クラス名(FQCN)
+```
+chapter06/code06-04/srcで計算機プログラムを起動する場合、  
+以下のように入力する必要がある。
+```
+java -cp ../bin calcapp.main.Calc
+足すと12、引くと8
+```
+
+#### 5-2. クラス名だけでクラスファイルを探し出すための仕組み
+
+こんな違和感を持っていないだろうか？
+
+javacコマンドではコンパイルしたいソースファイル名を指定するのに、  
+javaコマンドでは**実行したいクラスファイル名**ではなく、  
+あえてクラス名(FQCN)を指定するのはなぜか。
+
+実はその方がいいことがある。  
+どんないいことがあるのだろうか？  
+
+ここで、JVMがクラスを使う舞台裏を見ていこう。
+
+疑問解決の鍵となるのが、JVMが内部に持っているクラスローダーという機構である。  
+クラスローダーは、完全限定名を指定されたら、その名前を持つクラスのクラスファイルをPC内から検索し、  
+JVMに読み込んで利用可能にする役割を担っている。  
+
+たとえばクラスローダーに対してJVMが「calcapp.main.Calcを利用するから、読み込んで利用可能にしなさい」という指示を出すと、  
+クラスローダーはコンピューターのハードディスク内のどこかのフォルダに置いてあるCalc.classを探し出して、それを読み込む。  
+
+ここで、JVMは使いたいクラス名を指定しているだけであって、  
+クラスファイルが置いてあるフォルダを一切指定していない点に着目してほしい。
+
+Calc.classという目的のクラスファイルは、c:¥(Windows)にあるかもしれないし、  
+c:¥Program Files¥MyCalc¥lib(Windows)にあるかもしれないし、
+また別のところにあるかもしれない。  
+しかし、クラスローダーは膨大な容量を持つハードディスクの中から一瞬でCalc.classファイルを探し出して読み込んでくれる.
+
+以下はJVMがクラスローダーに依頼してクラスファイルを読み込んでもらう流れである。
+
+[![Image from Gyazo](https://i.gyazo.com/1407e47831c814f2deb5297a48d0a8ab.png)](https://gyazo.com/1407e47831c814f2deb5297a48d0a8ab)
+
+ここで疑問が生まれてくる。
+
+どうして一瞬で見つけることができるのか？  
+数百GBのハードディスクを検索していたら数分ぐらいかかってしまうのでは？  
+
+クラスローダーはハードディスクの内容を全て検索したりはせず、賢い方法で検索する。
+
+クラスローダーはクラスパスと呼ばれるヒント情報を使って、  
+極めて高速に目的のクラフファイルを探し出す。
+クラスパスとは、クラスローダーがクラスファイルを探す際に見に行くべきフォルダの場所である。  
+あらかじめ1つ以上のクラスパスを指定しておく。
+
+たとえばクラスパスとして、c:¥work(windows)がしていしてある場合、  
+クラスローダーはc:¥workの中にCalc.classがあるかを探しにいくだけでよいため、  
+高速に検索することができる。
+
+このようなクラスローダーの働きによって、  
+私たちはjavaコマンドにクラス名だけを指定してJavaプログラムを実行することができる。
+
+#### 5-3. クラスパスの指定方法
+
+クラスパスの指定方法には3つの方法がある。
+
+1. 起動時にJavaコマンドで起動する
+
+javaコマンドでJVMを起動する際に、-cpオプション、または-classpathオプションで指定する方法。
+これまでのサンプルコードは全てこの方法で行っている。
+
+chapter06/code06-04/srcから計算機プログラムを実行する場合
+```
+java -cp ../bin calcapp.main.Calc
+```
+
+2. 検索場所をOSに登録しておく
+
+javaコマンドを入力するたびにいちいち-cpオプションを指定するのは面倒である。  
+そこでOSの「環境変数」という設定にクラスパスを登録しておくができる。  
+javaコマンドは、この環境変数を自動的に読み込んでクラスファイルの検索に利用する。
+
+3. 特に指定しない
+
+環境変数に指定がなく、-cpオプションの指定もない場合、  
+通常はjavaコマンドが実行されたフォルダがクラスパスとなる。  
+たとえばc:¥workでjavaコマンドを実行すれば、c:¥workがクラスパスに設定される。
+
+#### 5-4. クラスパスで指定できる対象
+
+1. フォルダの場所
+
+最も一般的なのは、クラスファイルが置かれているフォルダの絶対パス。  
+たとえば、「c:¥work」と指定すると、workフォルダ内のクラスファイルが検索対象になる。
+
+2. クラスファイルが入ったJARファイルやZIPファイル
+
+クラスファイルが入っているJARファイルやZIPファイルがあれば、  
+そのファイルの絶対パスをクラスパスとして指定できる。  
+クラスローダーは指定されたファイルの中を検索し、  
+もしクラスファイルが見つかれば読み込む。
+
+たとえばWindowsで、Calc.classが入ったcalcapp.jarというファイルがc:¥work¥jarsにある場合、  
+「c:¥work¥jars¥calcapp.jar」をクラスパスに指定すると、  
+Calc.classを読み込むことができる。
+
+3. 複数のフォルダ、JAR/ZIPファイル、それらの組み合わせ
+
+複数のフォルダやJARファイル、ZIPファイルをデリミタ文字で区切ってクラスパスに指定することができる。  
+デリミタ文字は、Windowsの場合はセミコロン(;)、macOSやLinuxの場合はコロン(:)。  
+クラスローダーは、指定された場所を前から順に探していく。  
+
+Windowsの場合
+```
+c:¥work;c:¥work¥jars¥calcapp.jar
+```
+
+macOSやLinuxの場合
+```
+/var/javadev:/var/javadev/jars/calcapp.jar
+```
+
+#### 5-5. クラスファイルの正しい配置
+
+以下のエラーを見てみよう
+```
+java calcapp.main.Calc
+エラー: メイン・クラスCalcを検出およびロードできませんでした
+原因: java.lang.ClassNotFoundException: Calc
+```
+ClassNotFoundExceptionと表示された場合、  
+**クラスローダーが目的のクラスファイルを探し出せない**のが原因。  
+クラスローダーは**クラスパスで指定されたフォルダを対象に、  
+探しているクラスファイルを調べる。  
+このとき、次のようなルールでパッケージに属しているクラスのクラスファイルを探す。
+
+パッケージに対するクラスローダーの動作：  
+パッケージx.y.zに属するクラスCが対象なら、  
+「クラスパスで指定されたフォルダ¥x¥y¥z¥C.class」を探そうとする。
+
+つまりパッケージに属したクラスファイルをクラスローダーに読み込んでもらうには、  
+現在のクラスパスを基準として、パッケージ階層に対応したフォルダ階層を作り、  
+その中に必要なクラスファイルを配置しておく必要がある。
+
+chapter06/code06-04の場合、
+```
+Calc.class → /Users/(ユーザー名)/IdeaProjects/java-silver-practice/chapter06/code06-04/bin/calcapp/main/Calc.class
+CalcLogic.class → /Users/(ユーザー名)/IdeaProjects/java-silver-practice/chapter06/code06-04/bin/calcapp/logics/CalcLogic.class
+```
+
+ここが一番混乱しやすいところ。  
+
+まず以下のように分解する。
+```
+/Users/(ユーザー名)/IdeaProjects/java-silver-practice/
+chapter06/code06-04/bin/
+calcapp/main/
+Calc.class
+```
+
+これを色分けすると
+```
+【① ファイルシステム上の場所】
+/Users/(ユーザー名)/IdeaProjects/java-silver-practice/chapter06/code06-04/
+
+【② クラスパス】
+bin/
+
+【③ パッケージ】
+calcapp/main/
+
+【④ クラスファイル】
+Calc.class
+```
+つまり、
+```
+/Users/.../chapter06/code06-04/
+            │
+            └── bin/  ← クラスパス
+                 │
+                 └── calcapp/
+                      └── main/  ← package calcapp.main;
+                           │
+                           └── Calc.class ← Calcクラス
+```
+現在のディレクトリの位置がjava-silver-practiceにいる場合、  
+以下のコマンドで実行可能となる。
+```
+cd chapter06/code06-04
+java -cp bin calcapp.main.Calc
+足すと12、引くと8
+```
+
+Javaが考えていること
+1. クラスパスは？ → bin
+2. パッケージは？ → calcapp.main
+3. クラス名は？ → Calc
+
+なので、
+```
+bin
+└── calcapp
+     └── main
+          └── Calc.class
+```
+を探しに行く。
+
+よって、`java -cp bin calcapp.main.Calc`というコマンドは、  
+「binを起点として、calcapp/main/Calc.classを探してください」という意味になる。
+
+クラスファイルを適切なフォルダに置いた上で上記コマンドを実行すれば、  
+以下の順序を経て無事にプログラムは動作することだろう。
+
+1. JVMは起動させるクラス名(calcapp.main.Calc)を受け取る。
+2. JVMはクラスローダーにcalcapp.main.Calcの読み込みを指示する。
+3. クラスローダーはクラスパスを確認する(上記ではbin、-cpのオプションが必要)。
+4. クラスローダーは、クラスパスを基準として「calcapp」→「main」とフォルダを降りていき、そこにCalc.classを発見する。
+5. クラスローダーは発見したCalc.classを読み込む。
+6. JVMは読み込んだCalcクラスのmainメソッドを実行する。
+
+ここまでjavaコマンドのオプションと引数について触れてきたが、  
+javacコマンドとjavaコマンドの引数には決定的な違いがある。  
+javacコマンドは「どのソースファイルをコンパイルするか」を**ファイル名で指定して**実行する。  
+一方javaコマンドは「どのmainメソッドを起動するか」を**クラス名(FQCN)で指定して**実行する。
+
+このように、よく似た2つのコマンドには、全く別の引数を指定する必要がある。
+
+### 6. 名前空間
+
+#### 6-1. パッケージを使うもう1つのメリット
+
+パッケージには、クラスをグループ化して整理し、  
+プログラムをわかりやすくする目的の他に、もう一つ重要な役割がある。  
+自分の作るクラスに対して、開発者が自由に名前をつけられるようにすることである。
+
+いままでも自由にクラス名はつけてきたし、  
+あまり不自由感は感じられなかったが、  
+それは個人開発での話。  
+これが200個ぐらいのクラスを20人で分担して開発する場合どうなるだろうか？
+
+大規模開発の現場では、複数の開発者が分担して各自受け持ったクラスを開発することになる。  
+すると、それぞれの開発者が偶然「同じ名前のクラス名を使ってしまう」という可能性が生じてしまう。
+
+このように、内容が異なる別々のクラスで同じ名前を取り合うことを名前の衝突という。
+
+異なるクラスで同じ名前のクラスを使うと区別がつかなくなってしまうため、  
+Javaではクラス名の衝突は原則として許されない。  
+使うことができる名前の総量（これを名前空間という）は限られていて、  
+新しいクラスを作ると、そのクラス名は使えなくなり、使えるクラス名は減っていく。
+
+これが現実世界の子どもの命名する場合、  
+もし「過去に使われた名前はダメ」という規則があったらそれは大変なことである。  
+現実世界で名前が衝突しても問題ないのはなぜだろうか？  
+
+現実世界で人名が重複しても問題が起きないのは、  
+他の手段によって正しく区別できるから。  
+例えば同じ会社に同姓同名がいたとしても、
+「部署」や「役職」などによって区別が付きます。
+
+Javaでも**パッケージが異なれば同じクラス名を使ってよい**ルールになっている。  
+なぜなら、クラス名が同一でも、パッケージが異なれば完全限定クラス名(FQCN)が異なるので、  
+両者を区別することが可能になる。  
+つまり、パッケージの利用によって、それぞれのパッケージの中でクラスを自由に決められる。
+
+たとえば同じPrinter.javaであっても、  
+パッケージが異なれば区別がつくので問題はない。
+```
+gamen.Printer
+insatsu.Printer
+```
+この両者はパッケージ名が異なるので区別がつく。
+
+#### 6-2. パッケージ名の衝突を避ける方法
+
+パッケージ名さえ異なればクラス名は重複してよく、  
+自由にクラス名を決められることはわかった。  
+しかし、パッケージ名が衝突した場合はこれらの前提が全て崩れてしまう。
+
+自社の開発プロジェクトなら、誰がどのようなパッケージ名を使うかを事前に決めておけば衝突は回避できる。  
+しかし他社パッケージを利用する場合はどうだろうか？  
+パッケージ名が衝突しないように事前にコントロールするのは難しい。  
+
+たとえばA社がmyappパッケージを使ってプログラム開発をしているとしよう。  
+画面表示を担当するPrinterクラスはA社内で開発しましたが、  
+印刷機能はイギリスのC社が無料でインターネット上に公開しているPrinterクラスを利用すれば  
+A社内で開発せずに済みそう。
+
+しかしC社も偶然そのプログラムでmyappパッケージを使っており、  
+このままではA社が作成したmyapp.Printerと完全限定クラス名が重なってしまう。  
+これでは2つのクラスを区別することができない。
+
+そこでJavaでは、自分（または自社）が保有するインターネットドメインを前後逆順にしたものから始まるパッケージ名の使用を推奨している。  
+たとえば、foo.example.comというインターネットドメインをを取得している企業の場合は、  
+com.example.fooで始まるパッケージ名を使う。  
+インターネットドメインは、それぞれの組織ごとに世界に1つだけなので、  
+これでパッケージ名が衝突することはない。  
+com.example.fooより後ろは、企業や組織内部でパッケージ名が衝突しないよう調整を行う。
+
+以下のようにすればパッケージ名は衝突しない  
+```
+日本のA社（所有ドメイン：a.jp） → jp.a.myappパッケージ  
+イギリスのC社(所有ドメイン：c.gb) → gb.c.myappパッケージ  
+```
+以上のようなパッケージ名のルールのおかげで、  
+世界中のいろんな人や企業が作ったクラスを自由に組み合わせて利用できるようになる。  
+Javaのプログラムは「世界中の様々な人が作ったクラス」を組み合わせることで効率よく開発できる。  
+
+今回のようなテストプログラムなどでは簡易的なパッケージ名をつけてもよいが、  
+正式なプログラムのクラスには、この命名規則に従ったパッケージ名をつけよう。  
+もしかしたら、自分が作って公開するクラスも、世界中の誰かが利用する日が来るかもしれない。
+
+### 7. Java APIについて学ぶ
+
+#### 7-1. 世界中の人々の協力で完成していたHelloWorld
+
+chapter00/code00-01/src/Main.javaで「Hello World」を出力するプログラムを書いて動かしたと思う。
+
+```
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
+}
+```
+
+一見シンプルなプログラムのように見えるが、  
+このHelloWorldプログラムは、**実は1つのクラスだけでできているわけではない**。  
+自分たちが作成したクラスは1つだけだが、実際には多くのクラスから成り立っている。  
+
+ここで試しにjavaコマンドに特殊なオプションを指定してHello Worldプログラムを実行してみる。
+
+```
+java -verbose:class Main      
+[0.008s][info][class,load] java.lang.Object source: shared objects file
+[0.008s][info][class,load] java.io.Serializable source: shared objects file
+[0.008s][info][class,load] java.lang.Comparable source: shared objects file
+[0.008s][info][class,load] java.lang.CharSequence source: shared objects file
+[0.008s][info][class,load] java.lang.constant.Constable source: shared objects file
+（以下略）
+[0.023s][info][class,load] Main source: file:/Users/hiron/IdeaProjects/java-silver-practice/chapter00/code00-01/bin/
+（以下略）
+```
+
+実行する環境やJVMのバージョンによって多少の違いはあるが、  
+数百行の[class,load] 〜.〜.〜が出てきたかと思う。  
+表示されたのは、Hello Worldプログラムを動かすためにJVMに読み込まれたクラスの完全限定クラス名である。  
+
+つまり、Hello Worldプログラムとは、  
+**自分で作った1つのクラスが他のクラスと数百個のクラスと連携して動く多数のクラスからなるプログラム**である。
+
+自分で作ったMainクラス以外の他にどういうクラスが連携して動いているのか。  
+代表的なパッケージをいくつか紹介する。
+
+1. java.utilパッケージ
+2. java.langパッケージ
+3. java.ioパッケージ  
+etc.  
+
+上記のような自分たちが作ったクラスを除く他の数百個のクラスは、  
+Javaに初めから存在するクラスであり、  
+それらはAPI(Application Programming Interface)と総称されている。
+
+JavaではAPIとしておよそ200を超えるパッケージ、3,500を超える多くのクラスが標準提供されている。  
+自分たちプログラム開発者は、それらのクラスをいつでも自由に使用することができる。  
+
+例えば「5個の要素を持つint配列」に入っている5個の整数を並び替えるプログラムを開発する場面を想定する。  
+並び替えロジックを自力で開発するのは少し大変だが、  
+わざわざ自分たちで開発しなくてもAPIとして準備されている命令を呼び出せばすぐさま解決できる。
+
+chapter06/code06-05/src/Main.java
+```
+import java.util.Arrays;    // 今回はArraysクラスをインポート
+
+public class Main {
+    public static void main(String[] args) {
+        int[] heights = {172, 149, 152, 191, 155};
+        Arrays.sort(heights);   // 昇順に並び替え
+        for(int h : heights){
+            System.out.println(h);
+        }
+    }
+}
+```
+
+このコードは、「java.utilパッケージのArraysクラス」をインポートし、  
+「インポートしたArraysクラスにあるsortメソッド」を呼び出している。  
+これを見れば、「java.util.Arraysは標準で提供するAPIの一部であること」が理解できると思う。
+
+実際にAPIに含まれる3,500を超えるクラスは、  
+それぞれのクラスファイル(Arrays.classなど)の形で、  
+JDKをインストールしたときにコンピュータに保存されている。  
+これらのクラスファイルも、Hello Worldプログラムを作った時と同じように、  
+Java言語を作った人たちがソースコードを書いてコンパイルして作ったものである。
+
+自分たちは気づかないうちに、  
+世界中の人たちが作った数百個のクラスと連携するクラスを作って動かすという、  
+世界をまたにかけた開発をしていたことになる。  
+スケールの大きい話である。
+
+#### 7-2. APIで提供されるパッケージ
+
+APIには非常にたくさんのパッケージとクラスが含まれているが、  
+APIのクラスには「java.」または「javax.」で始まるもパッケージが利用できる。  
+以下はその代表的なAPIになる。
+
+<table>
+  <tr>
+    <td>java.lang</td>
+    <td>Javaプログラミングに欠かせない重要なクラス群</td>
+  </tr>
+  <tr>
+    <td>java.util </td>
+    <td>Javaプログラミングを便利にするさまざまなクラス群</td>
+  </tr>
+  <tr>
+    <td>java.math </td>
+    <td>数学に関するクラス群</td>
+  </tr>
+  <tr>
+    <td>java.net </td>
+    <td>ネットワーク通信などを行うためのクラス群</td>
+  </tr>
+  <tr>
+    <td>java.io </td>
+    <td>ファイルの読み書きなど、データを逐次処理するためのクラス群</td>
+  </tr>
+</table> 
+
+特に、java.langパッケージに属するクラスは頻繁に利用するものが多いので、  
+import文を記述しなくても自動的にインポートされるという特別な扱いを受けている。  
+java.langパッケージに属する代表的なクラスは、  
+System、Integer、Math、Object、String、Runtimeなどがある。
+
+#### 7-3.APIリファレンスの読み方
+
+Javaが提供する膨大な数のAPIクラスにどのようなクラスが含まれていて、  
+どのようなメソッドを持っているかを調べるには、  
+APIリファレンスと呼ばれるAPIの説明書を読む必要がある。  
+「Java API 仕様 (バージョン数)」などのキーワード検索すると、  
+Oracle Help CenterのWebページが見つかり、  
+例えばバージョンが21の場合だと、「概要 (Java SE 21 & JDK 21)」をクリックすると、  
+Javaのそのバージョンにおけるモジュールやパッケージの一覧を見ることができる。  
+
+[![Image from Gyazo](https://i.gyazo.com/7ce69ed5cd7de60a057ffcd3b5fe612d.png)](https://gyazo.com/7ce69ed5cd7de60a057ffcd3b5fe612d)
+
+画像は概要 (Java SE 21 & JDK 21)のトップーページである。  
+一覧を辿りながらクラスを探したい場合は、まずは「java.base」モジュールを選択し、  
+その後、パッケージやクラスを選択していく。  
+クラスの説明には、概要のほか、そのクラスが持つメソッドやその引数、戻り値の詳細が詳細に解説されている。  
+
+[![Image from Gyazo](https://i.gyazo.com/9dacef10d23a9a806fba087b1d70cd80.png)](https://gyazo.com/9dacef10d23a9a806fba087b1d70cd80)
+
+画像は、java.utilパッケージのScannerクラスの解説の冒頭である。  
+下の方にスクロールしていくと、nextIntやnextLineの詳しい使い方が解説されている。  
+他にも数多くのメソッドを持っている。
+
+## まとめ
+
+- クラスの分割
+  - 複数のクラスで1つのプログラムを構成できる。
+  - 別のクラスのメソッドを呼び出す場合は、`クラス名.メソッド名`と指定する。
+  - Javaプログラムの完成像は、複数のクラスファイルの集合体である。
+  - mainメソッドを含むクラスのFQCNを指定してjavaコマンドで起動する。
+- パッケージ
+  - package文を用いて、クラスをパッケージに所属できる。
+  - import文を使うと、コード中のFQCNを省略できる。
+- クラスローダーの動作
+  - クラスローダーは、読み込み対象のFQCNに基づき、クラスパスを基準としてパッケージ階層に従ったフォルダ構造を探し、読み込む。
+  - コンパイルして生成したクラスファイルは、実行時にクラスローダーが見つけられるように、適切なフォルダに配置しなければならない。
+- API
+  - Javaにあらかじめ添付されている多数のクラス群をAPIという。
+  - APIは通常、「java.」または「javax.」で始まるパッケージ名を用いる。
+  - java.langパッケージに属するクラスは自動的にインポートされる。
+  - APIに用意されているクラスは、APIリファレンスで調べることができる。
+
+## 練習問題
+
+### 練習6-1
+
+chapter06/practice06-01/src/Main.java
+```
+import comment.Zenhan;
+
+public class Main {
+    public static void main(String[] args) {
+        try {
+            Zenhan.doWarusa();
+            Zenhan.doTogame();
+            comment.Kouhan.callDeae();
+            comment.Kouhan.showMondokoro();
+        } catch (Exception e){
+            System.out.println("エラーが発生しました。プログラムを終了します。");
+        }
+    }
+}
+```
+※throws Exceptionはここでは考えないものとすると書いてあるが、  
+try-catch文を書かないとコンパイルエラーになるため記載が必要。
+
+chapter06/practice06-01/src/comment/Zenhan.java
+```
+package comment;
+
+public class Zenhan {
+    public static void doWarusa(){
+        System.out.println("きなこでござる。食えませんがの。");
+    }
+
+    public static void doTogame(){
+        System.out.println("この老いぼれの目はごまかせんぞ。");
+    }
+}
+```
+
+chapter06/practice06-01/src/comment/Kouhan.java
+```
+package comment;
+
+public class Kouhan{
+    public static void callDeae(){
+        System.out.println("えぇぃ、こしゃくな。くせ者だ！であえい！");
+    }
+
+    public static void showMondokoro() throws Exception {
+        System.out.println("飛車さん、角さん。もういいでしょう。");
+        System.out.println("この紋所が目にはいらぬか！");
+        Zenhan.doTogame();     // もう一度、とがめる
+    }
+}
+```
+
+### 練習6-2
+
+練習6-1のコンパイルと実行
+
+/Users/(ユーザー名)/IdeaProjects/java-silver-practiceにいる場合
+```
+cd chapter06/practice06-01/src
+javac -d ../bin Main.java comment/Zenhan.java comment/Kouhan.java
+java -cp ../bin Main
+```
+
+以下実行結果
+```
+java -cp ../bin Main
+きなこでござる。食えませんがの。
+この老いぼれの目はごまかせんぞ。
+えぇぃ、こしゃくな。くせ者だ！であえい！
+飛車さん、角さん。もういいでしょう。
+この紋所が目にはいらぬか！
+この老いぼれの目はごまかせんぞ。
+```
+
+### 練習6-3
+
+chapter06/practice06-03/src/comment/Kouhan.java
+```
+package comment;
+
+public class Kouhan{
+    public static void callDeae(){
+        System.out.println("えぇぃ、こしゃくな。くせ者だ！であえい！");
+    }
+
+    public static void showMondokoro() throws Exception {
+        System.out.println("飛車さん、角さん。もういいでしょう。");
+        System.out.println("この紋所が目にはいらぬか！");
+        Thread.sleep(3000);     // 3秒間一時停止
+        Zenhan.doTogame();      // もう一度、とがめる
+    }
+}
+```
+
+### 練習6-4
+
+Windowsの環境変数CLASSPATHとして「c:¥work¥ex64」が指定されている場合、  
+デフォルトパッケージに属しているMainクラスはex64フォルダの直下に配置する。  
+Zenhanクラス、Kouhanクラスは、commentパッケージに属しているので、  
+ex64の中にcommentフォルダを作成し、その中にZenhan.classとKouhan.classを配置する。
+
+よって、java Mainで実行するためには、  
+
+Mainクラス → c:¥work¥ex64フォルダ  
+Zenhanクラス → c:¥work¥ex64¥commentフォルダ  
+Kouhanクラス → c:¥work¥ex64¥commentフォルダ
+
+以上の場所に各クラスファイルを配置する必要がある。
+
+### 練習6-5
+
+Zenhan.classが「c:¥javaapp¥koumon¥comment」に存在することから、  
+Kouhan.classは同じフォルダ内に存在しており、  
+Main.classは、「c:¥javaapp¥koumon」に存在している。  
+
+ここで、java Mainというコマンドを実行すると、  
+練習6-3のプログラムが実行することから、
+環境変数CLASSPATHとして指定されているのは「c:¥javaapp¥koumon」である。
