@@ -51,6 +51,10 @@ Java Silver取得とSpring Boot学習準備のための学習リポジトリで�
 | 2026/08/05 | chapter06 | Java APIを学ぶ                                                     |
 | 2026/08/08 | chapter06 | Java APIを学ぶ                                                     |
 | 2026/08/09 | chapter06 | まとめ、練習問題 |
+| 2026/08/10 | chapter07 | オブジェクト指向ことのはじめ |
+| 2026/08/19 | chapter07 | オブジェクト指向の定義と効果、オブジェクト指向の全体像と本質 |
+| 2026/08/21 | chapter07 | オブジェクトと責務、オブジェクト指向の三大機能と今後の学習 |
+| 2026/08/22 | chapter07 | まとめ、練習問題 |
 
 ## 学習状況
 - [x] ~chapter00~
@@ -60,7 +64,7 @@ Java Silver取得とSpring Boot学習準備のための学習リポジトリで�
 - [x] ~chapter04~
 - [x] ~chapter05~
 - [x] ~chapter06~
-- [ ] chapter07
+- [x] ~chapter07~
 - [ ] chapter08
 - [ ] chapter09
 - [ ] chapter10
