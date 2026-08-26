@@ -149,3 +149,210 @@ java -cp ../bin Main
 
 オブジェクト指向の概念に照らし合わせて混乱を招かないためにも、  
 このMainメソッドは必要である。
+
+## 2. クラスの定義方法
+
+### 2-1. 登場人物クラスの作り方
+
+ここからはHeroやMatangoクラスを作るために、  
+クラスの定義方法を学んでいく。
+
+クラスには「どのような属性を持っているか」を記述していく。  
+現時点で自分たちが思い描く「勇者クラスが持つべき属性や操作」を図にまとめる。
+
+[![Image from Gyazo](https://i.gyazo.com/0529f80eb8cf82bbca8019f4b9fddf5b.png)](https://gyazo.com/0529f80eb8cf82bbca8019f4b9fddf5b)
+
+この図のように、あるクラスの「クラス名」「属性」「操作」を上から一覧として並べる書き方は、  
+クラス図と呼ばれる設計図ルールに準じたものである。  
+クラス図は、世界共通の設計図であるUML(Unified Modeling Language)で定められている図の一つである。  
+
+この設計に基づいて記述したJavaプログラムが以下のコードである。
+
+```
+public class Hero {
+    private String name;
+    private int hp;
+
+    public void attack(){};
+
+    public void sleep(){};
+
+    public void sit(int sec){};
+
+    public void slip(){};
+
+    public void run(){};
+}
+```
+
+※privateについては後の章で学ぶ。
+
+### 2-2. クラスの宣言方法
+
+クラスの宣言にはclassキーワードを使用する。  
+以下は中身のない空のHeroクラスを宣言している。
+
+```
+public class Hero {
+}
+```
+
+### 2-3. 属性の宣言方法
+
+2-1で示した図によると、  
+勇者クラスが持つ属性は名前とHPである。  
+これらの属性について、  
+プログラムで使用する変数名と型を考える。  
+名前は文字列なのでString型、  
+HPは数値なのでint型とする。
+
+- 【名前】name(String型)
+- 【HP】hp(int型)
+
+これらの変数をクラスのブロック内に宣言したものが以下になる。
+
+```
+public class Hero {
+    private String name;  // 名前の宣言
+    private int hp;       // HPのの宣言
+}
+```
+
+上記のように、クラスブロック内に宣言された変数を、  
+Javaでは特にフィールドという。  
+これで、nameとhpという2つのフィールドの宣言が完了した。
+
+フィールドの宣言について、  
+属性を宣言するにはクラスブロックの中に変数宣言を記述する。
+
+## 2-4. 属性の初期値設定と定数フィールド
+
+フィールド宣言と同時に値の代入も記述すると、  
+そのフィールドの初期値設定ができる。
+
+chapter08/src/Matango.java
+```
+public class Matango{
+    private int hp;
+    private int level = 10;
+}
+```
+
+フィールド宣言の先頭にfinalをつけると、  
+値を書き換えられない定数フィールドになる。  
+定数フィールドは一目でわかるように大文字で記載することが推奨されている。
+
+```
+public class Matango{
+    private int hp;
+    private final int LEVEL = 10;
+}
+```
+
+## 2-5. 操作の宣言方法
+
+次に、Heroクラスの操作を「記述」していく。  
+「操作」を定義するには以下が必要になる。
+
+- 操作の名前
+- 操作する時に必要な情報一覧
+- 操作の結果として指示元に返す情報
+- 処理内容
+
+以上の4つを考える必要がある。
+
+例えば「眠る」という操作の具体的な要素として、  
+以下のように考えたとする。
+
+- 【名前】sleep
+- 【必要情報】なし
+- 【結果】なし
+- 【処理内容】HPが100に回復する
+
+これらをHeroクラスのクラスブロックの中に記載すると以下のようになる。
+
+```
+public class Hero {
+    private String name;
+    private int hp;
+
+    public void sleep(){
+        this.hp = 100;
+        System.out.println(this.name + "は、眠って回復した！");
+    };
+}
+```
+
+ここでthisというキーワードが出てくる。  
+thisは特別に準備された変数で、  
+「自分自身のインスタンス」を意味している。  
+また、.(ドット)には、日本語でいう「の」と同じ意味があるので、
+
+```
+this.hp = 100;
+```
+これは**自分自身のインスタンスのhpフィールドに100を代入する**という意味になる。
+
+以上でHeroクラスにsleepメソッドを宣言することができた。
+
+※sleepメソッドにstaticをつけない理由はchapter14で詳しく取り扱う。
+
+## 2-6. クラス名とメンバ名のルール
+
+ここで紹介したフィールドとメソッドは、メンバと総称される。  
+そしてクラス名やメンバ名は、基本的に識別子のルールに沿っていれば自由に決めることができるが、  
+実際には以下のような慣例に従って名前をつけるのが望ましいとされる。  
+
+| 対象     | 品詞 | 大文字/小文字の用法 | 例                    |
+|--------|----|----------|----------------------|
+| クラス名   | 名詞 | 単語の頭が大文字 | Hero、MonsterInfo     |
+| フィールド名 | 名詞 | 最初以外の単語の頭が大文字 | level、itemList       |
+| メソッド名  | 動詞 | 最初以外の単語の頭が大文字 | attack、findWeakPoint |
+
+## 2-7. クラス定義のまとめ
+
+ここまで、Heroクラスを題材にクラスの定義方法を学んできた。  
+クラスを定義するには、「属性」と「操作」の一覧を図にまとめる。  
+そして、それぞれ「フィールド」と「メソッド」としてJavaのコードに書き換えて記述していく。
+
+この考え方に沿って、Heroクラスに「座る」「転ぶ」「逃げる」メソッドを追加したのが以下のコードである。
+
+chapter08/src/Hero.java
+```
+public class Hero {
+    private String name;
+    private int hp;
+
+    public void attack(){};
+
+    public void sleep(){
+        this.hp = 100;
+        System.out.println(this.name + "は、眠って回復した！");
+    };
+
+    public void sit(int sec){
+        this.hp += sec;
+        System.out.println(this.name + "は、" + sec + "秒座った！");
+    };
+
+    public void slip(){
+        this.hp -= 5;
+        System.out.println(this.name + "は、転んだ");
+        System.out.println("5のダメージ！");
+    };
+
+    public void run(){
+        System.out.println(this.name + "は、逃げ出した！");
+        System.out.println("GAMEOVER");
+        System.out.println("最終HPは、" + this.hp + "でした");
+    };
+}
+```
+
+ここで注意すべきことはthisを省略しないこと。  
+同じクラス内のフィールドにアクセスする場合、  
+`this.`を省略しても動作はする。  
+たとえば、`this.hp = 100;`と`hp = 100;`は同じ動作である。  
+しかしローカル変数や引数にも同じhpという名前の変数が存在する場合、  
+そちらが優先されてしまうなど予想外の動作をする可能性がある。  
+フィールドを指示するときには明示的に`this.`をつけること。
