@@ -61,6 +61,7 @@ Java Silver取得とSpring Boot学習準備のための学習リポジトリで�
 | 2026/08/27 | chapter08 | クラス定義による効果      |
 | 2026/08/28 | chapter08 | インスタンスの利用方法     |
 | 2026/08/29 | chapter08 | インスタンスの利用方法、まとめ |
+| 2026/08/31 | chapter08 | 練習問題 |
 
 ## 学習状況
 - [x] ~chapter00~
@@ -71,7 +72,7 @@ Java Silver取得とSpring Boot学習準備のための学習リポジトリで�
 - [x] ~chapter05~
 - [x] ~chapter06~
 - [x] ~chapter07~
-- [ ] chapter08
+- [x] ~chapter08~
 - [ ] chapter09
 - [ ] chapter10
 - [ ] chapter11

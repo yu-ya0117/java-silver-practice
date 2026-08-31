@@ -1,6 +1,6 @@
 # 第8章
 
-学習日: 2026-08-24 〜 （現在学習中）
+学習日: 2026-08-24 〜 2026-08-31
 
 ## 学んだこと
 
@@ -28,6 +28,9 @@
   - インスタンスのメソッド呼び出し
   - インスタンス利用のまとめ
   - オブジェクト指向のクラスは現実世界とつながっている
+
+## 詰まったこと
+最後の練習問題のアルゴリズム
 
 ## 1. 仮想世界の作り方
 
@@ -674,3 +677,81 @@ chapter08で初めて「現実世界と意味がつながったクラス」に�
   - new演算子で、クラスからインスタンスを生み出せる。
   - あるクラス型変数にインスタンスが格納されているとき、`変数名.フィールド名`でフィールドを、`変数名.メソッド名()`でメソッドを利用できる。
 
+## 練習問題
+
+### 練習8-1
+
+chapter08/practice08/src/Cleric.java
+```
+public class Cleric{   
+}
+```
+
+### 練習8-2
+
+chapter08/practice08/src/Cleric.java
+```
+public class Cleric{
+    String name;
+    int hp;
+    final int MAX_HP = 50;
+    int mp = 10;
+    final int MAX_MP = 10;
+}
+```
+
+### 練習8-3
+
+chapter08/practice08/src/Cleric.java
+```
+public class Cleric{
+    String name;
+    int hp;
+    final int MAX_HP = 50;
+    int mp = 10;
+    final int MAX_MP = 10;
+
+    public void selfAid(){
+        System.out.println(this.name + "はセルフエイドを唱えた！");
+        this.hp = this.MAX_HP;
+        this.mp -= 5;
+        System.out.println("HPが最大まで回復した");
+    }
+}
+```
+
+### 練習8-4
+
+chapter08/practice08/src/Cleric.java
+```
+import java.util.Random;
+
+public class Cleric{
+    String name;
+    int hp;
+    final int MAX_HP = 50;
+    int mp = 10;
+    final int MAX_MP = 10;
+
+    public void selfAid(){
+        System.out.println(this.name + "はセルフエイドを唱えた！");
+        this.hp = this.MAX_HP;
+        this.mp -= 5;
+        System.out.println("HPが最大まで回復した");
+    }
+
+    public int pray(int sec){
+        System.out.println(this.name + "は" + sec + "秒間天に祈った！");
+
+        // MP回復量を算出
+        int recover = new Random().nextInt(3) + sec;
+
+        // 実際のMP回復量を算出
+        int recoverAcutual = Math.min(this.MAX_MP - this.mp, recover);
+
+        this.mp += recoverAcutual;
+        System.out.println("MPが" +  recoverAcutual + "回復した");
+        return recoverAcutual;
+    }
+}
+```
