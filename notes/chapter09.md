@@ -30,6 +30,7 @@
 - 参照型：配列型(int[]型やString[]型など)とクラス型(Hero型など)の総称。
 - 参照の解決：変数から番地情報を取り出し、その番地にアクセスするというJVMの動作のこと。アドレス解決ともいう。
 - インスタンスの独立性：同じクラスから生まれた異なるインスタンスは互いに影響を受けない性質。
+- has-a関係：あるクラスが別のクラスをフィールドとして利用している関係のこと。
 
 ## 1. クラス型と参照
 
@@ -185,3 +186,124 @@ h2のhpフィールドに代入しても、
 勇者インスタンスのhpフィールドにはh1で100が代入されるが(`h1.hp = 100;`)、  
 その後に同じhpフィールドにh2経由で200が上書きされる(`h2.hp = 200;`)。  
 よって、最後に表示される`System.out.println(h1.hp);`は200である。
+
+### 1-8. クラス型をフィールドに用いる
+
+chapter09/code09-01/src/Sword.java
+```
+public class Sword {
+    String name;
+    int damage;
+}
+```
+
+chapter09/code09-01/src/Hero.java
+```
+public class Hero {
+    String name;
+    int hp;
+    Sword sword;
+
+    public void attack(){
+        System.out.println(this.name + "は攻撃した！");
+        System.out.println("敵に5ポイントのダメージをあたえた！");
+    }
+}
+```
+
+Heroクラスに新しく追加されたフィールド「sword」は、  
+int型やString型ではなく、Sword型である。  
+このようにフィールドにクラス型を変数を宣言することも可能。  
+今回の例のように、「あるクラスが別のクラスをフィールドとして利用している関係」をhas-a関係という。
+図にすると以下のようになる。
+
+[![Image from Gyazo](https://i.gyazo.com/42018e35816646486299f62629b9bdf5.png)](https://gyazo.com/42018e35816646486299f62629b9bdf5)
+
+「has-a」と呼ぶ理由は、以下のような英文が自然と成立するため。
+
+**Hero has-a Sword(勇者は剣を持っている)**
+
+この2つのクラスを利用するMainクラスは以下のようになる。
+
+```
+public class Main {
+    public static void main(String[] args) {
+        Sword s = new Sword();
+        s.name = "炎の剣";
+        s.damage = 10;
+        Hero h = new Hero();
+        h.name = "ミナト";
+        h.hp = 100;
+        h.sword = s;
+        System.out.println("現在の武器は" + h.sword.name);
+        h.attack();
+    }
+}
+```
+
+このときのメモリの様子は以下のようになる。
+
+[![Image from Gyazo](https://i.gyazo.com/6222b22d28479892db121c751a53466a.png)](https://gyazo.com/6222b22d28479892db121c751a53466a)
+
+822番地にある変数hには、勇者インスタンスのアドレス値(1011番地)が入っている。  
+そして勇者インスタンスに含まれるsword領域には、剣インスタンスのアドレス値(2465番地)が格納されている。  
+すなわち、先ほどの「Hero has-a Sword」関係が成立しており、  
+HeroクラスがSwordクラスをフィールドとして利用しているのがわかる。
+
+### 1-9. クラス型をメソッド引数や戻り値に用いる
+
+クラス型はフィールドの型に用いるだけでなく、  
+メソッドの引数や戻り値の型としても利用できる。  
+ここで、既にある勇者(Hero)クラスに加え、魔法使い(Wizard)クラスを作成してみる。  
+魔法使いは、勇者のHPを回復する魔法(heal)をつかうことができる。
+
+chapter09/code09-02/src/Wizard.java
+```
+public class Wizard {
+    String name;
+    int hp;
+
+    public void heal(Hero h){
+        h.hp += 10;
+        System.out.println(h.name + "のHPを10回復した！");
+    }
+}
+```
+healメソッドが呼び出されると、  
+魔法使いインスタンスは勇者のHPを10回復させる。  
+ただし、仮想世界には勇者が2人以上生み出されている(2回以上newされている)可能性もあるため、  
+呼び出されるときに「どの勇者を回復するのか」を引数hとして受け取る必要がある。  
+(上記の`public void heal(Hero h)`の部分)
+
+実際にこの魔法使いクラスを利用してみる。
+
+chapter09/code09-02/src/Main.java
+```
+public class Main{
+    public static void main(String[] args) {
+        Hero h1 = new Hero();
+        h1.name = "ミナト";
+        h1.hp = 100;
+        Hero h2 = new Hero();
+        h2.name = "アサカ";
+        h2.hp = 100;
+        Wizard w = new Wizard();
+        w.name = "スガワラ";
+        w.hp = 50;
+        w.heal(h1); // ミナトを回復させる(HP100→110)
+        w.heal(h2); // アサカを回復させる(HP100→110)
+        w.heal(h2); // アサカを回復させる(HP110→120)
+    }
+}
+```
+これに伴い、Heroクラスも以下に変更している。
+
+chapter09/code09-02/src/Hero.java
+```
+public class Hero {
+    String name;
+    int hp;
+}
+```
+
+
