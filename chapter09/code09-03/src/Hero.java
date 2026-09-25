@@ -3,9 +3,8 @@ public class Hero {
     int hp;
     Sword sword;
 
-    public Hero() {             // 新しく作ったコンストラクタ
-        this.hp = 100;
-        this.name = "ダミー";    // ダミーの名前を設定する
+    public Hero() {
+        this("ダミー");
     }
 
     public Hero(String name) {  // 以前から存在していたコンストラクタ
