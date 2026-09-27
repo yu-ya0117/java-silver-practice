@@ -70,6 +70,8 @@ Java Silver取得とSpring Boot学習準備のための学習リポジトリで�
 | 2026/09/23 | chapter09 | コンストラクタ                                                         |
 | 2026/09/24 | chapter09 | コンストラクタ |
 | 2026/09/25 | chapter09 | コンストラクタ |
+| 2026/09/26 | chapter09 | まとめ |
+| 2026/09/27 | chapter09 | 練習問題 |
 
 ## 学習状況
 - [x] ~chapter00~
@@ -81,7 +83,7 @@ Java Silver取得とSpring Boot学習準備のための学習リポジトリで�
 - [x] ~chapter06~
 - [x] ~chapter07~
 - [x] ~chapter08~
-- [ ] chapter09
+- [x] ~chapter09~
 - [ ] chapter10
 - [ ] chapter11
 - [ ] chapter12
