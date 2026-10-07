@@ -11,7 +11,14 @@ public class SuperHero extends Hero{
         System.out.println("着地した！");
     }
 
-    public void run(){  //  親クラスでも定義してあるが、子クラスで再定義するメソッド
+    public void run(){
         System.out.println(this.name + "は撤退した");
+    }
+
+    public void attack(Matango m){  //  Heroクラスからオーバーライド
+        super.attack(m);
+        if(this.flying){
+            super.attack(m);
+        }
     }
 }

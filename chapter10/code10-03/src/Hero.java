@@ -4,8 +4,8 @@ public class Hero{
 
     public void attack(Matango m){
         System.out.println(this.name + "の攻撃");
-        m.hp -= 5;
-        System.out.println("5ポイントのダメージを与えた！");
+        m.hp -= 10;
+        System.out.println("10ポイントのダメージを与えた！");
     }
 
     public final void slip(){
