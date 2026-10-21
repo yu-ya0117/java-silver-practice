@@ -2,7 +2,7 @@ import java.util.Random;
 
 public class Cleric{
     String name;
-    int hp;
+    int hp = 50;
     final int MAX_HP = 50;
     int mp = 10;
     final int MAX_MP = 10;
@@ -21,11 +21,11 @@ public class Cleric{
         int recover = new Random().nextInt(3) + sec;
 
         // 実際のMP回復量を算出
-        int recoverAcutual = Math.min(this.MAX_MP - this.mp, recover);
+        int recoverActual = Math.min(this.MAX_MP - this.mp, recover);
 
-        this.mp += recoverAcutual;
-        System.out.println("MPが" +  recoverAcutual + "回復した");
-        return recoverAcutual;
+        this.mp += recoverActual;
+        System.out.println("MPが" + recoverActual + "回復した");
+        return recoverActual;
     }
 
     public void slip(){
