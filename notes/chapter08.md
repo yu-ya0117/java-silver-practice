@@ -2,7 +2,7 @@
 
 学習日：  
 1周目：2026-08-24 〜 2026-08-31
-2周目：2026-10-18 〜 
+2周目：2026-10-18 〜 2026-10-21
 　
 ## 学んだこと
 
@@ -696,7 +696,7 @@ chapter08/practice08/src/Cleric.java
 ```
 public class Cleric{
     String name;
-    int hp;
+    int hp = 50;
     final int MAX_HP = 50;
     int mp = 10;
     final int MAX_MP = 10;
@@ -1257,3 +1257,109 @@ chapter06までとchapter08では印象が違うと感じるのはこのため�
 現実世界に似せて作り、  
 現実世界に似せて動かす。  
 これがオブジェクト指向の根本的な思想である。
+
+### まとめ
+
+- インスタンスとクラス
+  - 仮想世界で活躍するのはインスタンスのみ。
+  - インスタンスを生成する「金型」を「クラス」という。
+  - インスタンスとクラスはまったく別物である。
+- フィールドとメソッド
+  - クラスには、属性としてフィールドを、操作としてメソッドを宣言する。
+  - finalのついたフィールドは定数フィールドになり、値の変更ができない。
+  - thisは「自身のインスタンス」という意味を持つキーワードである。
+- クラス型
+  - クラスを定義するとそのクラス型の変数を宣言できるようになる。
+  - あるクラス型の変数には、そのクラスのインスタンスを格納することができる。
+- インスタンス化
+  - new演算子でクラスからインスタンスを生成することができる。
+  - あるクラス型変数にインスタンスが格納されているとき、`変数名.フィールド名`でフィールドを、`変数名.メソッド名()`でメソッドを利用できる。
+
+### 練習8-1
+
+chapter08/practice08/src/Cleric.javaより
+```
+public class Cleric{
+}
+```
+
+### 練習8-2
+
+上記練習8-1に追記する。
+
+```
+public class Cleric{
+    String name;
+    int hp = 50;
+    final int MAX_HP = 50;
+    int mp = 10;
+    final int MAX_MP = 10;
+}
+```
+
+### 練習8-3
+
+```
+public class Cleric{
+    String name;
+    int hp = 50;
+    final int MAX_HP = 50;
+    int mp = 10;
+    final int MAX_MP = 10;
+
+    public void selfAid(){
+        System.out.println(this.name + "はセルフエイドを唱えた！");
+        this.hp = this.MAX_HP;
+        this.mp -= 5;
+        System.out.println("HPが最大まで回復した");
+    }
+}
+```
+※文言はあくまで一例である。
+
+### 練習8-4
+
+```
+import java.util.Random;
+
+public class Cleric{
+    String name;
+    int hp = 50;
+    final int MAX_HP = 50;
+    int mp = 10;
+    final int MAX_MP = 10;
+
+    public void selfAid(){
+        System.out.println(this.name + "はセルフエイドを唱えた！");
+        this.hp = this.MAX_HP;
+        this.mp -= 5;
+        System.out.println("HPが最大まで回復した");
+    }
+
+    public int pray(int sec){
+        System.out.println(this.name + "は" + sec + "秒間天に祈った！");
+
+        // MP回復量を算出
+        int recover = new Random().nextInt(3) + sec;
+
+        // 実際のMP回復量を算出
+        int recoverActual = Math.min(this.MAX_MP - this.mp, recover);
+
+        this.mp += recoverActual;
+        System.out.println("MPが" + recoverActual + "回復した");
+        return recoverActual;
+    }
+
+    public void slip(){
+        this.hp -= 5;
+        System.out.println(this.name + "は、転んだ");
+        System.out.println("5のダメージ！");
+    };
+}
+```
+new Random().nextInt(3)の部分で0,1,2のいずれかがを取得できる。  
+そこに秒数を加えることで、MP回復量を算出できるが、  
+MPが最大値を超えることはないため、  
+上記で算出したものと、最大MPから現在のMPを差し引いた数値を比較して、  
+小さい方を実際のMP回復量としている。
+
