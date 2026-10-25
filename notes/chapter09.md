@@ -681,25 +681,19 @@ this(引数);
 
 この構文を用いて、Heroクラスを書き換えてみる。
 
-chapter09/code09-03/src/Hero.java
+【修正版】chapter09/code09-03/src/Hero.java
 ```
-public class Hero {
+public class Hero{
     String name;
     int hp;
-    Sword sword;
 
-    public Hero() {
-        this("ダミー");
+    public Hero(){        //  コンストラクタ①
+        this("ダミー");    //  コンストラクタ②の呼び出し依頼
     }
 
-    public Hero(String name) {  // 以前から存在していたコンストラクタ
+    public Hero(String name){   //  コンストラクタ②
         this.hp = 100;
         this.name = name;
-    }
-
-    public void attack() {
-        System.out.println(this.name + "は" + this.sword.name + "で攻撃した！");
-        System.out.println("敵に" + this.sword.damage + "ポイントのダメージをあたえた！");
     }
 }
 ```
@@ -711,10 +705,10 @@ chapter09/code09-03/src/Main.java
 public class Main {
     public static void main(String[] args) {
         Hero h1 = new Hero("ミナト");
-        System.out.println(h1.name + " HP：" + h1.hp);
+        System.out.println(h1.name);
 
         Hero h2 = new Hero();
-        System.out.println(h2.name + " HP：" + h2.hp);
+        System.out.println(h2.name);
     }
 }
 ```
@@ -1337,3 +1331,156 @@ public class Main {
 
 ここでのポイントは、1で指定したものが3で利用される点である。
 
+### 11. コンストラクタのオーバーロード
+
+もう1回以下のコードを見てみよう。
+
+```
+public class Hero {
+    String name;
+    int hp;
+
+    public Hero(String name) {
+        this.hp = 100;
+        this.name = name;   //  引数の値でフィールドを初期化
+    }
+}
+```
+
+このコードでは、引数として文字列を1つ受け取るコンストラクタが定義されている。  
+これは、インスタンスを生成するときに必ず引数として名前を指定する必要があることを意味する。  
+
+ではこの上記のコードで`new Hero();`するとどうなるか？
+
+答えはエラーになる。  
+理由はコンストラクタに引数なしのコンストラクタが定義されていないためである。  
+この問題を解決するためには、引数なしのコンストラクタを定義する必要がある。  
+いわゆるコンストラクタのオーバーロードである。
+
+chapter09/code09-05/src/Hero.java
+```
+public class Hero{
+    String name;
+    int hp;
+
+    public Hero(){
+        this.hp = 100;
+        this.name = "ダミー";
+    }
+
+    public Hero(String name){
+        this.hp = 100;
+        this.name = name;
+    }
+}
+```
+
+複数のコンストラクタが定義されている場合は、  
+newするときに渡した引数の型・数・順番に一致するコンストラクタ1つだけが動作する。
+
+オーバーロードしたコンストラクタを利用したMainクラスは以下の通り
+
+chapter09/code09-05/src/Main.java
+```
+public class Main {
+    public static void main(String[] args) {
+        Hero h1 = new Hero("ミナト");
+        System.out.println(h1.name);
+
+        Hero h2 = new Hero();
+        System.out.println(h2.name);
+    }
+}
+```
+実行結果は以下の通り
+```
+ミナト
+ダミー
+```
+### 12. 暗黙のコンストラクタ
+
+Javaではインスタンス化するに際して、  
+必ず何かしらのコンストラクタを実行する決まりになっている。  
+そのため、本来全てのクラスは1つ以上コンストラクタを持ってなければならない。
+
+そんなコンストラクタにも特例がある。
+
+クラスに1つもコンストラクタが定義されていない場合に限り、  
+「引数なし、処理なし」のコンストラクタがコンパイル時に自動的に追加される。
+これをデフォルトコンストラクタという。
+
+このため、コンストラクタを定義する前のHeroクラスには、  
+コンパイル時に引数なし・処理なしのコンストラクタが自動的に定義されていたため、  
+`new Hero();`によるインスタンス化が可能だった。
+
+ただし、何かしらのコンストラクタが1つでも定義されている場合は、  
+デフォルトコンストラクタは追加されないため、  
+特例は適用されなくなるので注意が必要。
+
+### 13. 他のコンストラクタを呼び出す方法
+
+以下のコードには、コンストラクタの内容が重複している。  
+
+chapter09/code09-05/src/Hero.javaを再掲
+```
+public class Hero{
+    String name;
+    int hp;
+
+    public Hero(){
+        this.hp = 100;
+        this.name = "ダミー";
+    }
+
+    public Hero(String name){
+        this.hp = 100;
+        this.name = name;
+    }
+}
+```
+
+将来仕様変更などで、HPを200にしたりしたいとき、  
+上記のコードでは両方のコンストラクタを修正する必要がある。  
+
+そこで思いつくのが、コンストラクタの中で別のコンストラクタを呼び出す方法である。  
+しかし、コンストラクタを呼び出せるのはJVMだけであり、  
+自分たちからは直接は呼び出すことはできないため、  
+JVMに別のコンストラクタの呼び出しを依頼する必要がある。  
+それが以下の構文である。
+
+```
+this(引数);
+```
+このthis()はコンストラクタの先頭に記述する必要がある。  
+this()で呼び出せるのは、同じクラスのコンストラクタのみである。  
+
+この構文を用いてchapter09/code09-05/src/Hero.javaは以下のように書くことができる。
+
+【修正版】chapter09/code09-03/src/Hero.java
+```
+public class Hero{
+    String name;
+    int hp;
+
+    public Hero(){        //  コンストラクタ①
+        this("ダミー");    //  コンストラクタ②の呼び出し依頼
+    }
+
+    public Hero(String name){   //  コンストラクタ②
+        this.hp = 100;
+        this.name = name;
+    }
+}
+```
+【修正版】chapter09/code09-03/src/Main.java
+```
+public class Main {
+    public static void main(String[] args) {
+        Hero h1 = new Hero("ミナト");
+        System.out.println(h1.name);
+
+        Hero h2 = new Hero();
+        System.out.println(h2.name);
+    }
+}
+```
