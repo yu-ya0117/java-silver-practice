@@ -1,6 +1,9 @@
 # 第10章
 
-学習日: 2026-10-03 〜 2026-10-13
+学習日：  
+1周目：2026-10-03 〜 2026-10-13  
+2周目：2026-10-28 〜　
+
 
 ## 学んだこと
 - 継承の基礎
@@ -157,7 +160,6 @@ SuperHeroクラスはHeroクラスをコピペして作っているので、
 類似したクラスを作成する機能、継承が存在する。  
 これを使えば、SuperHeroクラスは以下のコードのようにスッキリと記述できる。
 
-chapter10/code10-02/src/SuperHero.java
 ```
 public class SuperHero extends Hero{
     boolean flying;
@@ -193,7 +195,6 @@ name、hp、attack()、run()も持っていると判断してくれる。
 よって、**SuperHeroクラスのソースコードにはrun()はないが、  
 インスタンス化させればrun()を呼び出すことができる。**
 
-chapter10/code10-02/src/Main.java
 ```
 public class Main {
     public static void main(String[] args) {
@@ -247,7 +248,7 @@ SuperHeroクラスに限り、run()の動きを変化させたい場合は、
 子クラスのSuperHeroクラスにもrun()を記載することで、  
 SuperHeroクラスのrun()の動きを変化させることができる。
 
-chapter10/code10-02/src/SuperHero.javaを改変
+chapter10/code10-02/src/SuperHero.java
 ```
 public class SuperHero extends Hero{
     boolean flying;
@@ -269,7 +270,6 @@ public class SuperHero extends Hero{
 ```
 Heroクラスのrun()とSuperHeroクラスのrun()をMainクラスで呼び出してみる。
 
-chapter10/code10-02/src/Main.javaを改変
 ```
 public class Main {
     public static void main(String[] args) {
@@ -280,7 +280,6 @@ public class Main {
     }
 }
 ```
-
 実行結果は以下の通り
 ```
 ミナトは逃げ出した！
@@ -330,7 +329,7 @@ Javaでは**宣言にfinalが付けられているクラスは継承できない
 自分たちで作成したクラスにfinalをつければ「継承禁止」にできる。  
 例として、Mainクラスの継承を禁止するには、クラス宣言にfinalを追記する。
 
-chapter10/code10-02/src/Main.javaをさらに追記
+chapter10/code10-02/src/Main.java
 ```
 public final class Main {
     public static void main(String[] args) {
@@ -362,15 +361,14 @@ public final class Main {
 
 以下のように、オーバーライドを禁止したいメソッドにfinalを追記してあげればよい。
 
-chapter10/code10-02/src/Hero.javaを追記
+chapter10/code10-02/src/Hero.java
 ```
 public class Hero{
     String name = "ミナト";
     int hp = 100;
 
-    public void attack(Matango m){
+    public void attack(){
         System.out.println(this.name + "の攻撃");
-        m.hp -= 5;
         System.out.println("5ポイントのダメージを与えた！");
     }
 
@@ -967,3 +965,320 @@ public class PoisonMatango extends Matango{
     }
 }
 ```
+
+---
+
+## 以下2周目
+
+### 1. 似通ったクラスの開発
+
+Javaで大きなプログラムを作成するとなると、  
+以前と似通ったクラスを作る場面に出くわす。  
+
+例えば、
+- ほとんど同じだけど、フィールドが2つ多い
+- ほとんど同じだけど、メソッドが1つ多い
+
+などが挙げられる。
+
+以下は戦うと逃げるしかできないHeroクラスである。
+
+chapter10/code10-01/src/Hero.java
+```
+public class Hero{
+    String name = "ミナト";
+    int hp = 100;
+
+    public void attack(Matango m){
+        System.out.println(this.name + "の攻撃");
+        m.hp -= 5;
+        System.out.println("5ポイントのダメージを与えた！");
+    }
+
+    public void run(){
+        System.out.println(this.name + "は逃げ出した！");
+    }
+}
+```
+
+冒険が進むにつれて、HeroからSuperHeroに進化する。  
+SuperHeroでは以下の能力を持つ。
+
+- SuperHeroはfly()でで空を飛ぶことができ、land()で着地することができる。
+- Heroができる動作はすべてSuperHeroもできる。
+
+上記のHeroクラスのコードを元にSuperHeroクラスを作成するとなると、  
+以下のようなコードが思いつくだろう。
+
+chapter10/code10-01/src/SuperHero.java
+```
+public class SuperHero{
+    String name = "ミナト";
+    int hp = 100;
+    boolean flying;     //  flyingフィールドを追加
+
+    public void attack(Matango m){
+        System.out.println(this.name + "の攻撃");
+        m.hp -= 5;
+        System.out.println("5ポイントのダメージを与えた！");
+    }
+
+    public void run(){
+        System.out.println(this.name + "は逃げ出した！");
+    }
+    
+    public void fly(){    //  追加メソッド
+        this.flying = true;
+        System.out.println("飛び上がった！");
+    }
+    
+    public void land(){   //  追加メソッド
+        this.flying = false;
+        System.out.println("着地した！");
+    }
+}
+```
+
+いわゆるコピペする方法が思いつくだろう。
+
+### 2. コピペによる問題点
+
+1. 追加・修正に手間がかかる
+
+Heroクラスに新しいメソッドを追加する、  
+あるいはHeroクラスのメソッドに変更点がある場合、  
+SuperHeroクラスにも同様の変更を行う必要がある。  
+Heroクラスで行えることは全部SuperHeroクラスでも行えるためである。
+
+2. 把握や管理が難しくなる
+
+SuperHeroクラスはHeroクラスをコピーして作っているので、  
+この2つのコードは大半が重複しているため、  
+見通しが悪くなり、メンテナンスしづらくなる。
+
+### 3. 継承で解決
+
+コピペがダメならどうすればいいのか？
+
+そこで使われるのが継承である。  
+継承を使うことで、SuperHeroクラスは以下のようにスッキリと記述できる。
+
+```
+public class SuperHero extends Hero{
+    boolean flying;
+
+    public void fly(){
+        this.flying = true;
+        System.out.println("飛び上がった！");
+    }
+
+    public void land(){
+        this.flying = false;
+        System.out.println("着地した！");
+    }
+} 
+```
+
+ポイントは1行目にあるextendsというキーワード。  
+`class SuperHero extends Hero`という宣言は、  
+「HeroクラスをベースにしてSuperHeroクラスを定義するため、  
+Heroクラスと同じメンバの定義を省略します」という意味である。
+
+継承を用いたクラスの定義方法は以下の通り
+```
+public class クラス名　extends　元となるクラス名 {
+    //  親クラスとの差分となるメンバ
+}
+```
+
+このSuperHeroクラスがインスタンス化されるときに、  
+JVMは、省略されているけれども、  
+SuperHeroクラスはHeroクラスに含まれるname、hp、attack()、run()も持っていると判断してくれる。
+
+SuperHeroクラスのソースコードにはrun()はないが、  
+インスタンス化させれば以下のようにrun()メソッドを使うことができる。
+
+```
+public class Main{
+    public static void main(String[] args){
+        SuperHero sh = new SuperHero();
+        sh.run();
+    }
+}
+```
+このように、extendsを使用することで、  
+元となるクラスとの「差分」だけを記述して新たなクラスを宣言できる。
+
+新たに定義するクラス(SuperHeroクラス)に注目すると、  
+まるで元となるクラス(Heroクラス)からメンバが自動的に引き継がれているように見えることから、  
+継承という名前が付けられている。
+
+### 4. 継承関係の表現方法
+
+今回はHeroクラスを継承してSuperHeroクラスを作成した。  
+この2つのクラスの関係を継承関係という。
+
+また、元となるクラスのことを「親クラス」や「スーパークラス」などと呼び、  
+新しく作るクラスのことを「子クラス」や「サブクラス」などと呼ぶ。  
+
+継承関係を図にすると以下のようになる。
+(※1周目から再掲)
+
+[![Image from Gyazo](https://i.gyazo.com/9ca143d9edd80e98082b78d50f0581ec.png)](https://gyazo.com/9ca143d9edd80e98082b78d50f0581ec)
+
+上が親クラスであるHeroクラス、  
+下が子クラスであるSuperHeroクラスである。  
+注意したいのは矢印の方向で、  
+子クラスから親クラスへ上に伸びている。
+
+### 5. 継承のバリエーション
+
+継承は2つのクラスの関係にとどまらず、  
+1つの親クラスをベースとして、  
+複数の子クラスを定義することが可能である。  
+また、子クラスから孫クラスへの継承も可能である。
+
+[![Image from Gyazo](https://i.gyazo.com/fa3809c31db1db52328e2f9e1e7c0637.png)](https://gyazo.com/fa3809c31db1db52328e2f9e1e7c0637)
+
+注意点は、複数のクラスを親として、  
+1つの子クラスを定義することはできない。  
+多重継承と呼ばれるが、Javaでは許可されていない。
+
+### 6. オーバーライド
+
+Heroクラスでは「逃げ出した！」という出力になっているが、  
+SuperHeroでは「撤退した」と表現を変更して出力したい。  
+
+そういう場合はどうするか？
+
+上記の場合は、SuperHeroクラスのコードに新しいrun()を定義し、  
+中の処理をHeroのものとは別に記述すればよい。  
+具体的には以下のような形になる。
+
+chapter10/code10-02/src/SuperHero.java
+```
+public class SuperHero extends Hero{
+    boolean flying;
+
+    public void fly(){
+        this.flying = true;
+        System.out.println("飛び上がった！");
+    }
+
+    public void land(){
+        this.flying = false;
+        System.out.println("着地した！");
+    }
+
+    public void run(){  //  親クラスでも定義してあるが、子クラスで再定義するメソッド
+        System.out.println(this.name + "は撤退した");
+    }
+}
+```
+HeroクラスとSuperHeroクラスのrun()をMainクラスから呼び出す。
+```
+public class Main {
+    public static void main(String[] args) {
+        Hero h = new Hero();
+        h.run();
+        SuperHero sh = new SuperHero();
+        sh.run();
+    }
+}
+```
+実行結果は以下の通り
+```
+ミナトは逃げ出した！
+ミナトは撤退した
+```
+Heroクラスのrun()の内容をSuperHeroクラスのrun()で内容を上書きしている。  
+このように親クラスを継承して子クラスを宣言する際に、  
+親クラスのメンバを子クラス側で上書きすることをオーバーライドという。
+
+継承を用いて子クラスに宣言されたメンバの扱いは以下となる。
+1. 親クラスに同じメンバがなければ、そのメンバは子クラスに「追加」される。
+2. 親クラスに同じメンバがあれば、そのメンバは子クラスで「上書き」される。
+
+### 7. 継承やオーバーライドの禁止
+
+Javaではfinalが付けられているクラスは継承できないルールがある。  
+
+自分たちで定義したクラスにfinalをつけて継承禁止にもできるし、  
+StringクラスみたいにJavaのAPI側であらかじめ特別に継承禁止が指定されているクラスもある。  
+
+自分たちで定義する場合は以下のような形にすることで継承禁止にできる。
+
+chapter10/code10-02/src/Main.java
+```
+public final class Main {
+    public static void main(String[] args) {
+        Hero h = new Hero();
+        h.run();
+        SuperHero sh = new SuperHero();
+        sh.run();
+    }
+}
+```
+1行目にfinalの記述を加えてあげれば継承禁止になる。  
+
+また、Stringクラスが継承禁止な理由は、  
+「Stringクラスのおかしな類似品」が世に出回るのを防ぐためである。
+
+もしfinalがつけられていなかったらどうなっていたのだろうか？
+
+不具合なく完璧に動作するクラスがあっても、  
+技術力のない人がそのクラスを継承し、  
+オーバーライドしてメチャクチャに上書きされてしまったら、  
+「異常な動作をする子クラス」ができてしまう。  
+このクラスは親クラスと似てるようで全く内容が異なる類似品なため、  
+バグの原因になる危険性がある。
+
+特にStringクラスの場合、  
+プログラム内で多用されるクラスであるため、  
+「正しく動作しないStringクラスの類似品」が出回ってしまうと  
+致命的な不具合の原因になりかねない。
+
+以上の理由からStringクラスそのものにfinalがつけられていて、  
+すべてのメソッドがオーバーライドできないように継承禁止になっている。  
+
+クラスの継承は許可させたい。  
+しかし一部のメソッドのオーバーライドは禁止させたい。  
+こんなときはどうするか？
+
+一部のメソッドのオーバーライドを禁止させたい場合は、  
+オーバーライドを禁止したいメソッドに対してfinalを付け加える。
+
+chapter10/code10-02/src/Hero.java
+```
+public class Hero{
+    String name = "ミナト";
+    int hp = 100;
+
+    public void attack(){
+        System.out.println(this.name + "の攻撃");
+        System.out.println("5ポイントのダメージを与えた！");
+    }
+
+    public final void slip(){
+        this.hp -= 5;
+        System.out.println(this.name + "は転んだ！");
+        System.out.println("5のダメージ");
+    }
+
+    public void run(){
+        System.out.println(this.name + "は逃げ出した！");
+    }
+}
+```
+
+上記では、slip()にfinalを宣言することで、  
+子クラスでオーバーライドできないようになっている。
+
+継承やオーバーライドの禁止について簡単にまとめると、
+- クラス宣言にfinalをつけると、継承を禁止できる。
+- メソッド宣言にfinalをつけると、オーバーライドを禁止できる。
+
+また、基本的にはフィールドはオーバーライドはさせない。  
+実用上ほぼ用いられないため、ここでは割愛するが、  
+誤って親クラスと子クラスに同名のフィールドを宣言すると  
+意図しない動作をする可能性があるため注意が必要。
