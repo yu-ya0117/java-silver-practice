@@ -1282,3 +1282,140 @@ public class Hero{
 実用上ほぼ用いられないため、ここでは割愛するが、  
 誤って親クラスと子クラスに同名のフィールドを宣言すると  
 意図しない動作をする可能性があるため注意が必要。
+
+### 8. インスタンスの多重構造
+
+SuperHeroクラスのインスタンスのイメージは以下の図のようになっている。
+
+[![Image from Gyazo](https://i.gyazo.com/f424f22319c334f43e1e0397527891f8.png)](https://gyazo.com/f424f22319c334f43e1e0397527891f8)
+
+外から見たら、1つのSuperHeroインスタンスではあるが、  
+内部にHeroインスタンスを含んでいる。  
+全体として二重構造になっている。
+
+外側の部分のことを子インスタンス部分、  
+内側の部分のことを親インスタンス部分と呼ぶ。
+
+※親・子・孫と3つのクラスが継承関係にある場合は、孫クラスは三重構造になる。
+
+### 9. メソッドの呼び出し
+
+インスタンスの外からメソッドの呼び出しがあると、  
+多重構造のインスタンスは、極力外側にある子インスタンス部分のメソッドで対応しようとする。
+
+[![Image from Gyazo](https://i.gyazo.com/c64b2532063edea06a0d91b97d2b01f7.png)](https://gyazo.com/c64b2532063edea06a0d91b97d2b01f7)
+
+上記の場合では、fly()メソッドが呼び出されると、  
+外側の子インスタンス部分にしか存在しないため、  
+SuperHeroクラスで定義されたfly()メソッドが動作する。
+
+attack()メソッドが呼び出されると、
+今度は内側の親インスタンス部分にしか存在しないため、
+SuperHeroクラスの継承元であるHeroクラスで定義されたattack()メソッドが動作する。
+
+run()メソッドが呼び出されると、
+親インスタンス部分にも子インスタンス部分にもrun()メソッドが存在する。  
+上記の通り、多重構造のインスタンスにおいては、  
+外側にある子インスタンス部分のメソッドで対応しようとするため、  
+SuperHeroクラスのrun()メソッドが動作する。  
+継承元のHeroクラスのrun()メソッドが動作することはない。
+
+### 10. 親インスタンス部分へのアクセス
+
+頻度としてはそんなに多くはないが、  
+親インスタンス部分が大活躍することもある。  
+SuperHeroクラスに以下の仕様を追加してみる。
+
+SuperHeroは、空を飛んでいる状態でattack()すると、  
+Hero()では1回だった攻撃を2回繰り出すことができる。
+
+まず思いつきそうなオーバーライドは以下の通り
+
+```
+public class SuperHero extends Hero{
+    boolean flying;
+
+    public void fly(){
+        this.flying = true;
+        System.out.println("飛び上がった！");
+    }
+
+    public void land(){
+        this.flying = false;
+        System.out.println("着地した！");
+    }
+
+    public void run(){
+        System.out.println(this.name + "は撤退した");
+    }
+
+    public void attack(Matango m){
+        System.out.println(this.name + "の攻撃");
+        m.hp -= 5;
+        System.out.println("5ポイントのダメージを与えた！");
+        if(this.flying){
+            System.out.println(this.name + "の攻撃");
+            m.hp -= 5;
+            System.out.println("5ポイントのダメージを与えた！");           
+        }
+    }
+}
+```
+
+しかしこの方法では、将来Heroクラスで変更が発生した場合に困った事態に陥る。
+
+例として、Heroクラスのattack()が修正されたとき、  
+1回に与えられるダメージが10に変更された場合、  
+本来ならばSuperHeroは「10のダメージで2回攻撃」するべきなのだが、  
+「5のダメージで2回攻撃」のままになってしまう。  
+なぜならば、SuperHeroクラスでattack()メソッドがオーバーライドされているためである。
+
+ここで親インスタンス部分ののフィールドやメソッドにアクセスする必要が発生する。  
+具体的には以下の方法で実現できる。
+
+親インスタンス部分のフィールドにアクセする方法
+```
+super.フィールド名
+```
+
+親インスタンス部分のメソッドにアクセする方法
+```
+super.メソッド名(引数)
+```
+
+SuperHeroクラスのattack()メソッドを以下のように改良する
+
+chapter10/code10-03/src/SuperHero.java
+```
+public class SuperHero extends Hero{
+    boolean flying;
+
+    public void fly(){
+        this.flying = true;
+        System.out.println("飛び上がった！");
+    }
+
+    public void land(){
+        this.flying = false;
+        System.out.println("着地した！");
+    }
+
+    public void run(){
+        System.out.println(this.name + "は撤退した");
+    }
+
+    public void attack(Matango m){
+        super.attack(m);
+        if(this.flying){
+            super.attack(m);         
+        }
+    }
+}
+```
+
+このとき、必ずsuperを忘れずにつけること。
+superを付け忘れると、this.attack()と同じ意味になってしまい、  
+無限ループが発生してしまう。
+
+また、三重構造の継承のとき、  
+孫インスタンス部分から直接親インスタンス部分を呼び出すことはできない点も注意が必要。
