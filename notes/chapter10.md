@@ -1419,3 +1419,84 @@ superを付け忘れると、this.attack()と同じ意味になってしまい�
 
 また、三重構造の継承のとき、  
 孫インスタンス部分から直接親インスタンス部分を呼び出すことはできない点も注意が必要。
+
+### 11. 継承を利用したクラスのコンストラクタ
+
+繰り返しになるが、SuperHeroインスタンスは、  
+内部にHeroインスタンスを含む多重構造になっている。  
+この多重構造は、以下の図のように段階を経て構築されていく。
+
+[![Image from Gyazo](https://i.gyazo.com/d66650daba83b3a57a3dca086f53a74a.png)](https://gyazo.com/d66650daba83b3a57a3dca086f53a74a)
+
+SuperHeroインスタンスが完成すると、  
+JVMは自動的にSuperHero()コンストラクタを呼び出す。  
+
+ここで以下のコードを記述して動かしてみると、  
+興味深いことが発生する。
+
+```
+public class Hero {
+    //  フィールドの記載
+    
+    public Hero() {
+        System.out.println("Heroのコンストラクタが動作");
+    }
+
+    //  メソッドの記載
+}
+```
+
+```
+public class SuperHero extends Hero {
+    //  フィールドの記載
+    
+    public SuperHero() {
+        System.out.println("SuperHeroのコンストラクタが動作");
+    }
+    
+    //  メソッドの記載
+}
+```
+
+```
+public class Main {
+    public static void main(String[] args){
+        SuperHero sh = new SuperHero();
+    }
+}
+```
+実行結果は以下の通り
+```
+Heroのコンストラクタが動作
+SuperHeroのコンストラクタが動作
+```
+
+SuperHero()コンストラクタが実行されるのは理解できるが、  
+なぜか内側のHero()コンストラクタも実行されている。  
+それはなぜか？
+
+Javaにおいては以下のような決まりがある。
+
+**すべてのコンストラクタは、その先頭で必ず親クラスのコンストラクタを呼び出さなければならない**
+
+親クラスのコンストラクタは以下の方法で呼び出すことができる。
+```
+super(引数);
+※コンストラクタの先頭に記述する必要がある
+```
+
+本来はSuperHero()は以下のような書き方をする必要がある。
+
+```
+    public SuperHero() {
+        super();
+        //SuperHeroコンストラクタの処理
+    }
+```
+
+コンストラクタの1行目でsuper()の記述がない場合は、  
+コンパイラによってsuper();が自動的に挿入される。  
+つまり、「暗黙のsuper()」が自動的にHero()コンストラクタを呼び出していたことになる。
+
+[![Image from Gyazo](https://i.gyazo.com/0966fd28da3d7cc45cb5a16f44fb29d1.png)](https://gyazo.com/0966fd28da3d7cc45cb5a16f44fb29d1)
+
