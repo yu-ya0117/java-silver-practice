@@ -1500,3 +1500,96 @@ super(引数);
 
 [![Image from Gyazo](https://i.gyazo.com/0966fd28da3d7cc45cb5a16f44fb29d1.png)](https://gyazo.com/0966fd28da3d7cc45cb5a16f44fb29d1)
 
+### 12. 親インスタンス部分を作れない状況
+
+以下のコードではコンパイルエラーとなってしまう。
+
+```
+public class Item {
+    String name;
+    int price;
+    
+    public Item(String name) {
+        this.name = name;
+        this.price = 0;
+    }
+    
+    public Item(String name, int price) {
+        this.name = name;
+        this.price = price;
+    }
+}
+```
+
+```
+public class Weapon extends Item{・・・}
+```
+
+```
+public class Main {
+    public static void main(String[] args){
+        Weapon w = new Weapon();
+    }
+}
+```
+
+なぜコンパイルエラーになるのか？
+
+まず`new Weapon();`を実行すると、  
+JVMはWeaponインスタンスを生成しようとする。  
+WeaponクラスはItemクラスを継承しているため、  
+Weaponインスタンスの内部にItemインスタンスを含む二重構造となる。
+
+この二重構造のインスタンスを作り終えると、  
+JVMは自動的にWeapon()コンストラクタを呼び出そうとする。  
+Weapon()クラスにはコンストラクタが定義されていないため、  
+JVMはWeaponクラスに暗黙的なデフォルトコンストラクタを追加して動作する。
+
+しかし、デフォルトコンストラクタの先頭にはsuper()の記述はない。  
+コンストラクタの1行目でsuper()の記述がない場合は、  
+コンパイラによってsuper();が自動的に挿入される。  
+なので、本来のWeaponクラスは以下のようになる。
+
+```
+public Weapon() {
+    super();
+}
+```
+
+ここでおかしなことが発生する。
+`super();`は、親クラスであるItemクラスのコンストラクタを呼び出すことだが、  
+引数なしで呼び出そうとしている。  
+しかし、Itemクラスのコンストラクタの引数は必ず1つ、あるいは2つ必要である。  
+引数なしのItemコンストラクタはどこにも宣言されていない。  
+つまり、子クラスであるWeaponクラスからであっても、  
+`super();`のように親クラスのコンストラクタを呼び出すことができない。
+
+ではどうすれば解決できるか？
+
+`super();`で親クラスのコンストラクタを呼び出すことができないのならば、  
+Weaponクラスにコンストラクタを定義し、`super(引数);`を記述すればいい。
+
+```
+public class Weapon extends Item {
+    //  フィールドの記述
+    
+    public Weapon(){
+        super("ななしの剣");
+    }
+    
+    //  メソッドの記述
+}
+```
+
+以上のように記述すれば、Itemクラスの上のコンストラクタが呼び出され、  
+名前に「ななしの剣」を設定できる。  
+この状態では値段は0で初期化されるが、  
+コンストラクタ内を`super("ななしの剣", 300);`にすれば、  
+Itemクラスの下のコンストラクタが呼び出され、  
+名前だけでなく、値段に300を設定できる。
+
+以上から、superの引数の数と型によって、  
+親インスタンス部分が初期化されるときに利用されるコンストラクタを明示的に指定できる。
+
+また、コンストラクタ自体はクラスに固有の存在であるため、  
+コンストラクタは継承されない。
