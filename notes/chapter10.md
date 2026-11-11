@@ -2,7 +2,7 @@
 
 学習日：  
 1周目：2026-10-03 〜 2026-10-13  
-2周目：2026-10-28 〜　
+2周目：2026-10-28 〜 2026-11-11
 
 
 ## 学んだこと
@@ -915,10 +915,10 @@ Characterクラスにはnameとhpフィールドは定義できる。
 ### 練習10-1
 
 1. Student is-a Person → ◯
-2. Car has-a Engineであるため×
-3. Child is-a Fatherの関係が成り立たない → ×
+2. Car has-a Engineのため×
+3. この場合は概念としての親と子とは関係ないため×
 4. Sushi is-a Food → ◯
-5. Man is-a SuperManではなく、SuperMan is-a Manのため×
+5. ManもSuperManもどちらもHumanのサブクラスのため×
 
 よって間違った継承は②③⑤
 
@@ -1712,3 +1712,117 @@ Wizardクラスが持っていないメソッドも持つことができる。
 
 これまでは、継承は重複するコードの記述を減らすための方法として捉えてきたが、  
 ある2つのクラスに特化・汎化の関係があることを示すためのものでもある。
+
+### まとめ
+
+- 継承の基礎
+  - extendsを使うと既存のクラスをもとに新しいクラスを作ることができる。
+  - 親クラスのメンバは自動的に子クラスに引き継がれるため、子クラスにおいては差分だけ記述すればよい。
+  - 親クラスで宣言されているメソッドを子クラスで上書きすることをオーバーライドという。
+  - finalのついたクラスは継承できず、finalのついたメソッドはオーバーライドできない。
+  - 正しい継承はとは「子クラス is-a　親クラス」の文章に不自然のない継承である。
+  - 継承には、クラス間の汎化と特化の関係を定義する役割もある。
+- 継承されたクラスのインスタンス
+  - 内部に親クラスのインスタンスを持つ多重構造になっている。
+  - より外側のインスタンス部分に属するメソッドが優先的に動作する。
+  - 外側のインスタンス部分に属するメソッドは、superを用いることで1つ内側のインスタンス部分のメンバにアクセスすることが可能。
+- コンストラクタの動作
+  - 多重構造のインスタンスが生成されると、JVMは自動的に一番外側のコンストラクタを呼び出す。
+  - すべてのコンストラクタは、先頭で親インスタンスのコンストラクタを呼び出す必要がある。
+  - コンストラクタの先頭で親クラスのコンストラクタの呼び出しがなければ、コンパイラによって暗黙的に`super();`が追加される。
+
+### 練習10-1
+
+①Student is-a Person → ◯  
+②Engine is-a Car → ×  
+③Child is-a Father → ×  
+④Sushi is-a Food → ◯  
+⑤Man is-a SuperMan → ×
+
+よって間違った継承は②、③、⑤
+
+②はhas-aの関係なので×。
+
+継承では親クラスと子クラスという風に説明をしているが、  
+概念としての親と子とは関係がないので③は×。
+
+⑤のSuperManはHuman（人間）の一種なのでサブクラスにあたるので×。  
+同時にManもHuman（人間）の一種なのでサブクラスである。
+
+### 練習10-2
+
+1. MobilePhone → Phone → Device（携帯電話 → 電話機 → 機器）
+2. HybridCar → Car → Vehicle（ハイブリッド車 → 自動車 → 乗り物）
+3. JapaneseDictionary → Dictionary → Book（国語辞典 → 辞書 → 本）
+
+よって  
+ア：Device  
+イ：MobilePhone  
+ウ：Vehicle  
+エ：HybridCar  
+オ：Book  
+カ：JapaneseDictionary
+
+上記はあくまで一例である。
+
+### 練習10-3
+
+chapter10/practice10/src/PoisonMatango.java
+```
+public class PoisonMatango extends Matango{
+    int poisonCount = 5;
+
+    public PoisonMatango(char suffix){
+        super(suffix);
+    }
+
+    public void attack(Hero h){
+        super.attack(h);
+        if(this.poisonCount > 0){
+            System.out.println("さらに毒の胞子をばらまいた！");
+            int dmg = h.hp / 5;
+            h.hp -= dmg;
+            System.out.println(dmg + "ポイントのダメージ！");
+            this.poisonCount--;
+        }
+    }
+}
+```
+
+お化け毒キノコはお化けキノコの一種であるなので、  
+`public class PoisonMatango extends Matango`
+
+毒攻撃についてはattack(Hero h)でオーバーライドしている。  
+super.attack(h)の次の行から毒攻撃に関する記述を行なっている。
+
+```
+PoisonMatango pm = new PoisonMatango('A');
+```
+上記でインスタンス化できるようにするために、  
+コンストラクタは以下のようになる。
+```
+PoisonMatango(char suffix){
+    super(suffix);
+}
+```
+
+毒攻撃の残り回数をint型フィールドとして持っているため、  
+フィールドは`int poisonCount`である。  
+初期値は5なので
+attackメソッドのオーバーライドでこのフィールドを使用する。
+
+PoisonMatangoのattackメソッドについて、  
+通常のお化けキノコと同じ攻撃を行うので、  
+`suoer.attack(h);`
+
+毒攻撃は残り回数が0でなければ追加で行うなので、
+`if(this.poisonCount > 0)`  
+thisをつけるのを忘れがち。
+
+勇者のHPの1/5に相当するポイントを勇者から引くについては2行に分けて行う。  
+最初の行の`int dmg = h.hp / 5;`ダメージの算出を行い、  
+その次の行の`h.hp -= dmg;`で勇者のHPから算出したダメージを差し引く。
+dmgはそのまま出力に使えるのでこの方法で記述している。
+
+毒攻撃の残り回数を減らすので、  
+`poisonCount--;`をifブロックの最後に記述している。
