@@ -1,6 +1,9 @@
 # 第10章
 
-学習日: 2026-10-03 〜 2026-10-13
+学習日：  
+1周目：2026-10-03 〜 2026-10-13  
+2周目：2026-10-28 〜 2026-11-11
+
 
 ## 学んだこと
 - 継承の基礎
@@ -157,7 +160,6 @@ SuperHeroクラスはHeroクラスをコピペして作っているので、
 類似したクラスを作成する機能、継承が存在する。  
 これを使えば、SuperHeroクラスは以下のコードのようにスッキリと記述できる。
 
-chapter10/code10-02/src/SuperHero.java
 ```
 public class SuperHero extends Hero{
     boolean flying;
@@ -193,7 +195,6 @@ name、hp、attack()、run()も持っていると判断してくれる。
 よって、**SuperHeroクラスのソースコードにはrun()はないが、  
 インスタンス化させればrun()を呼び出すことができる。**
 
-chapter10/code10-02/src/Main.java
 ```
 public class Main {
     public static void main(String[] args) {
@@ -247,7 +248,7 @@ SuperHeroクラスに限り、run()の動きを変化させたい場合は、
 子クラスのSuperHeroクラスにもrun()を記載することで、  
 SuperHeroクラスのrun()の動きを変化させることができる。
 
-chapter10/code10-02/src/SuperHero.javaを改変
+chapter10/code10-02/src/SuperHero.java
 ```
 public class SuperHero extends Hero{
     boolean flying;
@@ -269,7 +270,6 @@ public class SuperHero extends Hero{
 ```
 Heroクラスのrun()とSuperHeroクラスのrun()をMainクラスで呼び出してみる。
 
-chapter10/code10-02/src/Main.javaを改変
 ```
 public class Main {
     public static void main(String[] args) {
@@ -280,7 +280,6 @@ public class Main {
     }
 }
 ```
-
 実行結果は以下の通り
 ```
 ミナトは逃げ出した！
@@ -330,7 +329,7 @@ Javaでは**宣言にfinalが付けられているクラスは継承できない
 自分たちで作成したクラスにfinalをつければ「継承禁止」にできる。  
 例として、Mainクラスの継承を禁止するには、クラス宣言にfinalを追記する。
 
-chapter10/code10-02/src/Main.javaをさらに追記
+chapter10/code10-02/src/Main.java
 ```
 public final class Main {
     public static void main(String[] args) {
@@ -362,15 +361,14 @@ public final class Main {
 
 以下のように、オーバーライドを禁止したいメソッドにfinalを追記してあげればよい。
 
-chapter10/code10-02/src/Hero.javaを追記
+chapter10/code10-02/src/Hero.java
 ```
 public class Hero{
     String name = "ミナト";
     int hp = 100;
 
-    public void attack(Matango m){
+    public void attack(){
         System.out.println(this.name + "の攻撃");
-        m.hp -= 5;
         System.out.println("5ポイントのダメージを与えた！");
     }
 
@@ -917,10 +915,10 @@ Characterクラスにはnameとhpフィールドは定義できる。
 ### 練習10-1
 
 1. Student is-a Person → ◯
-2. Car has-a Engineであるため×
-3. Child is-a Fatherの関係が成り立たない → ×
+2. Car has-a Engineのため×
+3. この場合は概念としての親と子とは関係ないため×
 4. Sushi is-a Food → ◯
-5. Man is-a SuperManではなく、SuperMan is-a Manのため×
+5. ManもSuperManもどちらもHumanのサブクラスのため×
 
 よって間違った継承は②③⑤
 
@@ -967,3 +965,864 @@ public class PoisonMatango extends Matango{
     }
 }
 ```
+
+---
+
+## 以下2周目
+
+### 1. 似通ったクラスの開発
+
+Javaで大きなプログラムを作成するとなると、  
+以前と似通ったクラスを作る場面に出くわす。  
+
+例えば、
+- ほとんど同じだけど、フィールドが2つ多い
+- ほとんど同じだけど、メソッドが1つ多い
+
+などが挙げられる。
+
+以下は戦うと逃げるしかできないHeroクラスである。
+
+chapter10/code10-01/src/Hero.java
+```
+public class Hero{
+    String name = "ミナト";
+    int hp = 100;
+
+    public void attack(Matango m){
+        System.out.println(this.name + "の攻撃");
+        m.hp -= 5;
+        System.out.println("5ポイントのダメージを与えた！");
+    }
+
+    public void run(){
+        System.out.println(this.name + "は逃げ出した！");
+    }
+}
+```
+
+冒険が進むにつれて、HeroからSuperHeroに進化する。  
+SuperHeroでは以下の能力を持つ。
+
+- SuperHeroはfly()でで空を飛ぶことができ、land()で着地することができる。
+- Heroができる動作はすべてSuperHeroもできる。
+
+上記のHeroクラスのコードを元にSuperHeroクラスを作成するとなると、  
+以下のようなコードが思いつくだろう。
+
+chapter10/code10-01/src/SuperHero.java
+```
+public class SuperHero{
+    String name = "ミナト";
+    int hp = 100;
+    boolean flying;     //  flyingフィールドを追加
+
+    public void attack(Matango m){
+        System.out.println(this.name + "の攻撃");
+        m.hp -= 5;
+        System.out.println("5ポイントのダメージを与えた！");
+    }
+
+    public void run(){
+        System.out.println(this.name + "は逃げ出した！");
+    }
+    
+    public void fly(){    //  追加メソッド
+        this.flying = true;
+        System.out.println("飛び上がった！");
+    }
+    
+    public void land(){   //  追加メソッド
+        this.flying = false;
+        System.out.println("着地した！");
+    }
+}
+```
+
+いわゆるコピペする方法が思いつくだろう。
+
+### 2. コピペによる問題点
+
+1. 追加・修正に手間がかかる
+
+Heroクラスに新しいメソッドを追加する、  
+あるいはHeroクラスのメソッドに変更点がある場合、  
+SuperHeroクラスにも同様の変更を行う必要がある。  
+Heroクラスで行えることは全部SuperHeroクラスでも行えるためである。
+
+2. 把握や管理が難しくなる
+
+SuperHeroクラスはHeroクラスをコピーして作っているので、  
+この2つのコードは大半が重複しているため、  
+見通しが悪くなり、メンテナンスしづらくなる。
+
+### 3. 継承で解決
+
+コピペがダメならどうすればいいのか？
+
+そこで使われるのが継承である。  
+継承を使うことで、SuperHeroクラスは以下のようにスッキリと記述できる。
+
+```
+public class SuperHero extends Hero{
+    boolean flying;
+
+    public void fly(){
+        this.flying = true;
+        System.out.println("飛び上がった！");
+    }
+
+    public void land(){
+        this.flying = false;
+        System.out.println("着地した！");
+    }
+} 
+```
+
+ポイントは1行目にあるextendsというキーワード。  
+`class SuperHero extends Hero`という宣言は、  
+「HeroクラスをベースにしてSuperHeroクラスを定義するため、  
+Heroクラスと同じメンバの定義を省略します」という意味である。
+
+継承を用いたクラスの定義方法は以下の通り
+```
+public class クラス名　extends　元となるクラス名 {
+    //  親クラスとの差分となるメンバ
+}
+```
+
+このSuperHeroクラスがインスタンス化されるときに、  
+JVMは、省略されているけれども、  
+SuperHeroクラスはHeroクラスに含まれるname、hp、attack()、run()も持っていると判断してくれる。
+
+SuperHeroクラスのソースコードにはrun()はないが、  
+インスタンス化させれば以下のようにrun()メソッドを使うことができる。
+
+```
+public class Main{
+    public static void main(String[] args){
+        SuperHero sh = new SuperHero();
+        sh.run();
+    }
+}
+```
+このように、extendsを使用することで、  
+元となるクラスとの「差分」だけを記述して新たなクラスを宣言できる。
+
+新たに定義するクラス(SuperHeroクラス)に注目すると、  
+まるで元となるクラス(Heroクラス)からメンバが自動的に引き継がれているように見えることから、  
+継承という名前が付けられている。
+
+### 4. 継承関係の表現方法
+
+今回はHeroクラスを継承してSuperHeroクラスを作成した。  
+この2つのクラスの関係を継承関係という。
+
+また、元となるクラスのことを「親クラス」や「スーパークラス」などと呼び、  
+新しく作るクラスのことを「子クラス」や「サブクラス」などと呼ぶ。  
+
+継承関係を図にすると以下のようになる。
+(※1周目から再掲)
+
+[![Image from Gyazo](https://i.gyazo.com/9ca143d9edd80e98082b78d50f0581ec.png)](https://gyazo.com/9ca143d9edd80e98082b78d50f0581ec)
+
+上が親クラスであるHeroクラス、  
+下が子クラスであるSuperHeroクラスである。  
+注意したいのは矢印の方向で、  
+子クラスから親クラスへ上に伸びている。
+
+### 5. 継承のバリエーション
+
+継承は2つのクラスの関係にとどまらず、  
+1つの親クラスをベースとして、  
+複数の子クラスを定義することが可能である。  
+また、子クラスから孫クラスへの継承も可能である。
+
+[![Image from Gyazo](https://i.gyazo.com/fa3809c31db1db52328e2f9e1e7c0637.png)](https://gyazo.com/fa3809c31db1db52328e2f9e1e7c0637)
+
+注意点は、複数のクラスを親として、  
+1つの子クラスを定義することはできない。  
+多重継承と呼ばれるが、Javaでは許可されていない。
+
+### 6. オーバーライド
+
+Heroクラスでは「逃げ出した！」という出力になっているが、  
+SuperHeroでは「撤退した」と表現を変更して出力したい。  
+
+そういう場合はどうするか？
+
+上記の場合は、SuperHeroクラスのコードに新しいrun()を定義し、  
+中の処理をHeroのものとは別に記述すればよい。  
+具体的には以下のような形になる。
+
+chapter10/code10-02/src/SuperHero.java
+```
+public class SuperHero extends Hero{
+    boolean flying;
+
+    public void fly(){
+        this.flying = true;
+        System.out.println("飛び上がった！");
+    }
+
+    public void land(){
+        this.flying = false;
+        System.out.println("着地した！");
+    }
+
+    public void run(){  //  親クラスでも定義してあるが、子クラスで再定義するメソッド
+        System.out.println(this.name + "は撤退した");
+    }
+}
+```
+HeroクラスとSuperHeroクラスのrun()をMainクラスから呼び出す。
+```
+public class Main {
+    public static void main(String[] args) {
+        Hero h = new Hero();
+        h.run();
+        SuperHero sh = new SuperHero();
+        sh.run();
+    }
+}
+```
+実行結果は以下の通り
+```
+ミナトは逃げ出した！
+ミナトは撤退した
+```
+Heroクラスのrun()の内容をSuperHeroクラスのrun()で内容を上書きしている。  
+このように親クラスを継承して子クラスを宣言する際に、  
+親クラスのメンバを子クラス側で上書きすることをオーバーライドという。
+
+継承を用いて子クラスに宣言されたメンバの扱いは以下となる。
+1. 親クラスに同じメンバがなければ、そのメンバは子クラスに「追加」される。
+2. 親クラスに同じメンバがあれば、そのメンバは子クラスで「上書き」される。
+
+### 7. 継承やオーバーライドの禁止
+
+Javaではfinalが付けられているクラスは継承できないルールがある。  
+
+自分たちで定義したクラスにfinalをつけて継承禁止にもできるし、  
+StringクラスみたいにJavaのAPI側であらかじめ特別に継承禁止が指定されているクラスもある。  
+
+自分たちで定義する場合は以下のような形にすることで継承禁止にできる。
+
+chapter10/code10-02/src/Main.java
+```
+public final class Main {
+    public static void main(String[] args) {
+        Hero h = new Hero();
+        h.run();
+        SuperHero sh = new SuperHero();
+        sh.run();
+    }
+}
+```
+1行目にfinalの記述を加えてあげれば継承禁止になる。  
+
+また、Stringクラスが継承禁止な理由は、  
+「Stringクラスのおかしな類似品」が世に出回るのを防ぐためである。
+
+もしfinalがつけられていなかったらどうなっていたのだろうか？
+
+不具合なく完璧に動作するクラスがあっても、  
+技術力のない人がそのクラスを継承し、  
+オーバーライドしてメチャクチャに上書きされてしまったら、  
+「異常な動作をする子クラス」ができてしまう。  
+このクラスは親クラスと似てるようで全く内容が異なる類似品なため、  
+バグの原因になる危険性がある。
+
+特にStringクラスの場合、  
+プログラム内で多用されるクラスであるため、  
+「正しく動作しないStringクラスの類似品」が出回ってしまうと  
+致命的な不具合の原因になりかねない。
+
+以上の理由からStringクラスそのものにfinalがつけられていて、  
+すべてのメソッドがオーバーライドできないように継承禁止になっている。  
+
+クラスの継承は許可させたい。  
+しかし一部のメソッドのオーバーライドは禁止させたい。  
+こんなときはどうするか？
+
+一部のメソッドのオーバーライドを禁止させたい場合は、  
+オーバーライドを禁止したいメソッドに対してfinalを付け加える。
+
+chapter10/code10-02/src/Hero.java
+```
+public class Hero{
+    String name = "ミナト";
+    int hp = 100;
+
+    public void attack(){
+        System.out.println(this.name + "の攻撃");
+        System.out.println("5ポイントのダメージを与えた！");
+    }
+
+    public final void slip(){
+        this.hp -= 5;
+        System.out.println(this.name + "は転んだ！");
+        System.out.println("5のダメージ");
+    }
+
+    public void run(){
+        System.out.println(this.name + "は逃げ出した！");
+    }
+}
+```
+
+上記では、slip()にfinalを宣言することで、  
+子クラスでオーバーライドできないようになっている。
+
+継承やオーバーライドの禁止について簡単にまとめると、
+- クラス宣言にfinalをつけると、継承を禁止できる。
+- メソッド宣言にfinalをつけると、オーバーライドを禁止できる。
+
+また、基本的にはフィールドはオーバーライドはさせない。  
+実用上ほぼ用いられないため、ここでは割愛するが、  
+誤って親クラスと子クラスに同名のフィールドを宣言すると  
+意図しない動作をする可能性があるため注意が必要。
+
+### 8. インスタンスの多重構造
+
+SuperHeroクラスのインスタンスのイメージは以下の図のようになっている。
+
+[![Image from Gyazo](https://i.gyazo.com/f424f22319c334f43e1e0397527891f8.png)](https://gyazo.com/f424f22319c334f43e1e0397527891f8)
+
+外から見たら、1つのSuperHeroインスタンスではあるが、  
+内部にHeroインスタンスを含んでいる。  
+全体として二重構造になっている。
+
+外側の部分のことを子インスタンス部分、  
+内側の部分のことを親インスタンス部分と呼ぶ。
+
+※親・子・孫と3つのクラスが継承関係にある場合は、孫クラスは三重構造になる。
+
+### 9. メソッドの呼び出し
+
+インスタンスの外からメソッドの呼び出しがあると、  
+多重構造のインスタンスは、極力外側にある子インスタンス部分のメソッドで対応しようとする。
+
+[![Image from Gyazo](https://i.gyazo.com/c64b2532063edea06a0d91b97d2b01f7.png)](https://gyazo.com/c64b2532063edea06a0d91b97d2b01f7)
+
+上記の場合では、fly()メソッドが呼び出されると、  
+外側の子インスタンス部分にしか存在しないため、  
+SuperHeroクラスで定義されたfly()メソッドが動作する。
+
+attack()メソッドが呼び出されると、
+今度は内側の親インスタンス部分にしか存在しないため、
+SuperHeroクラスの継承元であるHeroクラスで定義されたattack()メソッドが動作する。
+
+run()メソッドが呼び出されると、
+親インスタンス部分にも子インスタンス部分にもrun()メソッドが存在する。  
+上記の通り、多重構造のインスタンスにおいては、  
+外側にある子インスタンス部分のメソッドで対応しようとするため、  
+SuperHeroクラスのrun()メソッドが動作する。  
+継承元のHeroクラスのrun()メソッドが動作することはない。
+
+### 10. 親インスタンス部分へのアクセス
+
+頻度としてはそんなに多くはないが、  
+親インスタンス部分が大活躍することもある。  
+SuperHeroクラスに以下の仕様を追加してみる。
+
+SuperHeroは、空を飛んでいる状態でattack()すると、  
+Hero()では1回だった攻撃を2回繰り出すことができる。
+
+まず思いつきそうなオーバーライドは以下の通り
+
+```
+public class SuperHero extends Hero{
+    boolean flying;
+
+    public void fly(){
+        this.flying = true;
+        System.out.println("飛び上がった！");
+    }
+
+    public void land(){
+        this.flying = false;
+        System.out.println("着地した！");
+    }
+
+    public void run(){
+        System.out.println(this.name + "は撤退した");
+    }
+
+    public void attack(Matango m){
+        System.out.println(this.name + "の攻撃");
+        m.hp -= 5;
+        System.out.println("5ポイントのダメージを与えた！");
+        if(this.flying){
+            System.out.println(this.name + "の攻撃");
+            m.hp -= 5;
+            System.out.println("5ポイントのダメージを与えた！");           
+        }
+    }
+}
+```
+
+しかしこの方法では、将来Heroクラスで変更が発生した場合に困った事態に陥る。
+
+例として、Heroクラスのattack()が修正されたとき、  
+1回に与えられるダメージが10に変更された場合、  
+本来ならばSuperHeroは「10のダメージで2回攻撃」するべきなのだが、  
+「5のダメージで2回攻撃」のままになってしまう。  
+なぜならば、SuperHeroクラスでattack()メソッドがオーバーライドされているためである。
+
+ここで親インスタンス部分ののフィールドやメソッドにアクセスする必要が発生する。  
+具体的には以下の方法で実現できる。
+
+親インスタンス部分のフィールドにアクセする方法
+```
+super.フィールド名
+```
+
+親インスタンス部分のメソッドにアクセする方法
+```
+super.メソッド名(引数)
+```
+
+SuperHeroクラスのattack()メソッドを以下のように改良する
+
+chapter10/code10-03/src/SuperHero.java
+```
+public class SuperHero extends Hero{
+    boolean flying;
+
+    public void fly(){
+        this.flying = true;
+        System.out.println("飛び上がった！");
+    }
+
+    public void land(){
+        this.flying = false;
+        System.out.println("着地した！");
+    }
+
+    public void run(){
+        System.out.println(this.name + "は撤退した");
+    }
+
+    public void attack(Matango m){
+        super.attack(m);
+        if(this.flying){
+            super.attack(m);         
+        }
+    }
+}
+```
+
+このとき、必ずsuperを忘れずにつけること。
+superを付け忘れると、this.attack()と同じ意味になってしまい、  
+無限ループが発生してしまう。
+
+また、三重構造の継承のとき、  
+孫インスタンス部分から直接親インスタンス部分を呼び出すことはできない点も注意が必要。
+
+### 11. 継承を利用したクラスのコンストラクタ
+
+繰り返しになるが、SuperHeroインスタンスは、  
+内部にHeroインスタンスを含む多重構造になっている。  
+この多重構造は、以下の図のように段階を経て構築されていく。
+
+[![Image from Gyazo](https://i.gyazo.com/d66650daba83b3a57a3dca086f53a74a.png)](https://gyazo.com/d66650daba83b3a57a3dca086f53a74a)
+
+SuperHeroインスタンスが完成すると、  
+JVMは自動的にSuperHero()コンストラクタを呼び出す。  
+
+ここで以下のコードを記述して動かしてみると、  
+興味深いことが発生する。
+
+```
+public class Hero {
+    //  フィールドの記載
+    
+    public Hero() {
+        System.out.println("Heroのコンストラクタが動作");
+    }
+
+    //  メソッドの記載
+}
+```
+
+```
+public class SuperHero extends Hero {
+    //  フィールドの記載
+    
+    public SuperHero() {
+        System.out.println("SuperHeroのコンストラクタが動作");
+    }
+    
+    //  メソッドの記載
+}
+```
+
+```
+public class Main {
+    public static void main(String[] args){
+        SuperHero sh = new SuperHero();
+    }
+}
+```
+実行結果は以下の通り
+```
+Heroのコンストラクタが動作
+SuperHeroのコンストラクタが動作
+```
+
+SuperHero()コンストラクタが実行されるのは理解できるが、  
+なぜか内側のHero()コンストラクタも実行されている。  
+それはなぜか？
+
+Javaにおいては以下のような決まりがある。
+
+**すべてのコンストラクタは、その先頭で必ず親クラスのコンストラクタを呼び出さなければならない**
+
+親クラスのコンストラクタは以下の方法で呼び出すことができる。
+```
+super(引数);
+※コンストラクタの先頭に記述する必要がある
+```
+
+本来はSuperHero()は以下のような書き方をする必要がある。
+
+```
+    public SuperHero() {
+        super();
+        //SuperHeroコンストラクタの処理
+    }
+```
+
+コンストラクタの1行目でsuper()の記述がない場合は、  
+コンパイラによってsuper();が自動的に挿入される。  
+つまり、「暗黙のsuper()」が自動的にHero()コンストラクタを呼び出していたことになる。
+
+[![Image from Gyazo](https://i.gyazo.com/0966fd28da3d7cc45cb5a16f44fb29d1.png)](https://gyazo.com/0966fd28da3d7cc45cb5a16f44fb29d1)
+
+### 12. 親インスタンス部分を作れない状況
+
+以下のコードではコンパイルエラーとなってしまう。
+
+```
+public class Item {
+    String name;
+    int price;
+    
+    public Item(String name) {
+        this.name = name;
+        this.price = 0;
+    }
+    
+    public Item(String name, int price) {
+        this.name = name;
+        this.price = price;
+    }
+}
+```
+
+```
+public class Weapon extends Item{・・・}
+```
+
+```
+public class Main {
+    public static void main(String[] args){
+        Weapon w = new Weapon();
+    }
+}
+```
+
+なぜコンパイルエラーになるのか？
+
+まず`new Weapon();`を実行すると、  
+JVMはWeaponインスタンスを生成しようとする。  
+WeaponクラスはItemクラスを継承しているため、  
+Weaponインスタンスの内部にItemインスタンスを含む二重構造となる。
+
+この二重構造のインスタンスを作り終えると、  
+JVMは自動的にWeapon()コンストラクタを呼び出そうとする。  
+Weapon()クラスにはコンストラクタが定義されていないため、  
+JVMはWeaponクラスに暗黙的なデフォルトコンストラクタを追加して動作する。
+
+しかし、デフォルトコンストラクタの先頭にはsuper()の記述はない。  
+コンストラクタの1行目でsuper()の記述がない場合は、  
+コンパイラによってsuper();が自動的に挿入される。  
+なので、本来のWeaponクラスは以下のようになる。
+
+```
+public Weapon() {
+    super();
+}
+```
+
+ここでおかしなことが発生する。
+`super();`は、親クラスであるItemクラスのコンストラクタを呼び出すことだが、  
+引数なしで呼び出そうとしている。  
+しかし、Itemクラスのコンストラクタの引数は必ず1つ、あるいは2つ必要である。  
+引数なしのItemコンストラクタはどこにも宣言されていない。  
+つまり、子クラスであるWeaponクラスからであっても、  
+`super();`のように親クラスのコンストラクタを呼び出すことができない。
+
+ではどうすれば解決できるか？
+
+`super();`で親クラスのコンストラクタを呼び出すことができないのならば、  
+Weaponクラスにコンストラクタを定義し、`super(引数);`を記述すればいい。
+
+```
+public class Weapon extends Item {
+    //  フィールドの記述
+    
+    public Weapon(){
+        super("ななしの剣");
+    }
+    
+    //  メソッドの記述
+}
+```
+
+以上のように記述すれば、Itemクラスの上のコンストラクタが呼び出され、  
+名前に「ななしの剣」を設定できる。  
+この状態では値段は0で初期化されるが、  
+コンストラクタ内を`super("ななしの剣", 300);`にすれば、  
+Itemクラスの下のコンストラクタが呼び出され、  
+名前だけでなく、値段に300を設定できる。
+
+以上から、superの引数の数と型によって、  
+親インスタンス部分が初期化されるときに利用されるコンストラクタを明示的に指定できる。
+
+また、コンストラクタ自体はクラスに固有の存在であるため、  
+コンストラクタは継承されない。
+
+### 13. is-aの原則
+
+is-aの関係とは、子クラスは親クラスの一種であるという関係のことである。  
+正しい継承は、すべてこのis-aの原則に従って継承されている。  
+逆に間違った継承はこのis-aの原則にはない。
+
+SuperHeroを例にとると、  
+SuperHeroとは、Heroの中でも特殊能力を持った特別なHeroである。  
+英語に直すと以下の文章になるだろう。  
+
+SuperHero is-a Hero
+
+以上からもわかるように、  
+SuperHeroはHeroである。  
+よって、上記は正しい継承であると言える。
+
+is-aの文章が不自然であれば、  
+正しい継承ではないと疑った方がいい。
+
+### 13. 間違った継承の例
+
+現実世界の登場人物同士に概念としてis-aの関係が成り立たないにも関わらず、  
+継承してしまうのが間違った継承である。  
+以下はその一例である。
+
+```
+public class Item {
+    String name;  //  アイテムの名前
+    int price;    //  アイテムの値段
+}
+```
+
+以上のように、「名前」と「値段」を持つItemクラスがあるとする。  
+これは薬草やポーションなどといったアイテム(小道具)を表すクラスである。  
+ここに新たに家を表すHouseというクラスを追加したい。  
+
+House is Item...？何かがおかしい。  
+
+確かにHouseクラスには名前と値段のフィールドは存在してもいいとは思う。  
+しかし、この英文には違和感がある。  
+少なくとも、Houseは小道具ではない。  
+(どう見積もっても建物の一種なら百歩譲ってまだわかる)  
+よってこれは間違った継承である。
+
+フィールドやメソッドが流用できるからという安易な理由で継承するのではなく、  
+あくまで**is-aの関係にあるかを基準に継承するべき**である。
+
+ではなぜ間違った継承をしてはいけないのか？
+
+1. 将来クラスを拡張したときに現実世界との矛盾が生じるから
+2. オブジェクト指向の三大機能の一つ「多態性」を利用できなくなるから
+(※多態性についてはchapter12にて取り扱う)
+
+クラスを拡張したときに現実世界との矛盾が生じるとはどういうことか？
+
+ここでまた上記のItemクラスとHouseクラスを例に例える。  
+Houseクラスを作った時点では一見まだ問題ないように見える。  
+しかしこれはたまたまこの時点で実害がないだけの話であり、　　
+仮にここで以下のようにItemクラスに、  
+アイテムを投げつけてダメージを与えるメソッドを追加したとする。
+
+```
+public class Item {
+    String name;
+    int price;
+    
+    public void getDamage() {   //  アイテムを投げつけるメソッドを追加
+        return 10;
+    }
+}
+```
+
+ここでおかしなことが発生する。  
+HouseにもこのItemクラスを継承しているため、  
+「家を投げつけて10のダメージを与える」という極めて不自然な現象が発生してしまう。  
+なので、getDamageメソッドがHouseクラスに対して呼び出せるなんてことはあってはならない。  
+現実世界の家からかけ離れてしまい、オブジェクト指向の原則から外れる。  
+
+以上のことから、どんなにラクでも、どんなに便利でも、  
+is-aの原則が成立しないのならば継承してはいけない。
+
+### 14. 汎化と特化
+
+正しい継承がis-aの関係で結ばれるという事実は、  
+子クラスになればなるほど特殊で具体的なものに具体化していく。  
+これを特化という。  
+逆に、親クラスになればなるほど抽象的で曖昧なものに一般化していく。  
+これを汎化という。
+
+特化すればするほど、  
+より具体的に詳細にフィールドやメソッドを定めるため、  
+メンバが増えていく。  
+逆に汎化すればするほど、  
+フィールドやメソッドを定めるのが難しくなる。
+
+例えばキャラクターの場合、  
+必ず名前とHPは持っているだろう。  
+なので、Characterクラスにはnameやhpぐらいは定義することはできる。
+
+より具体的なキャラクターとして、  
+魔法使い(Wizard)を例にとると、  
+最低でもMPを持っていて火の玉ぐらいは放てると思われる。  
+クラス定義にはmpフィールドやfireballメソッドが加わる。  
+
+さらに具体化して、  
+一握りの魔法使い(GreatWizard)は雷を落とすlightningメソッドなど、  
+Wizardクラスが持っていないメソッドも持つことができる。  
+
+以上のような継承関係を表す図を継承ツリーという。
+
+[![Image from Gyazo](https://i.gyazo.com/6e30725eed883fe0e696a1b9e98f3082.png)](https://gyazo.com/6e30725eed883fe0e696a1b9e98f3082)
+
+クラス図において継承関係が表す矢印は、  
+汎化していく方向を表している。  
+そのため、継承の方向とは逆向きに描かれている。
+
+これまでは、継承は重複するコードの記述を減らすための方法として捉えてきたが、  
+ある2つのクラスに特化・汎化の関係があることを示すためのものでもある。
+
+### まとめ
+
+- 継承の基礎
+  - extendsを使うと既存のクラスをもとに新しいクラスを作ることができる。
+  - 親クラスのメンバは自動的に子クラスに引き継がれるため、子クラスにおいては差分だけ記述すればよい。
+  - 親クラスで宣言されているメソッドを子クラスで上書きすることをオーバーライドという。
+  - finalのついたクラスは継承できず、finalのついたメソッドはオーバーライドできない。
+  - 正しい継承はとは「子クラス is-a　親クラス」の文章に不自然のない継承である。
+  - 継承には、クラス間の汎化と特化の関係を定義する役割もある。
+- 継承されたクラスのインスタンス
+  - 内部に親クラスのインスタンスを持つ多重構造になっている。
+  - より外側のインスタンス部分に属するメソッドが優先的に動作する。
+  - 外側のインスタンス部分に属するメソッドは、superを用いることで1つ内側のインスタンス部分のメンバにアクセスすることが可能。
+- コンストラクタの動作
+  - 多重構造のインスタンスが生成されると、JVMは自動的に一番外側のコンストラクタを呼び出す。
+  - すべてのコンストラクタは、先頭で親インスタンスのコンストラクタを呼び出す必要がある。
+  - コンストラクタの先頭で親クラスのコンストラクタの呼び出しがなければ、コンパイラによって暗黙的に`super();`が追加される。
+
+### 練習10-1
+
+①Student is-a Person → ◯  
+②Engine is-a Car → ×  
+③Child is-a Father → ×  
+④Sushi is-a Food → ◯  
+⑤Man is-a SuperMan → ×
+
+よって間違った継承は②、③、⑤
+
+②はhas-aの関係なので×。
+
+継承では親クラスと子クラスという風に説明をしているが、  
+概念としての親と子とは関係がないので③は×。
+
+⑤のSuperManはHuman（人間）の一種なのでサブクラスにあたるので×。  
+同時にManもHuman（人間）の一種なのでサブクラスである。
+
+### 練習10-2
+
+1. MobilePhone → Phone → Device（携帯電話 → 電話機 → 機器）
+2. HybridCar → Car → Vehicle（ハイブリッド車 → 自動車 → 乗り物）
+3. JapaneseDictionary → Dictionary → Book（国語辞典 → 辞書 → 本）
+
+よって  
+ア：Device  
+イ：MobilePhone  
+ウ：Vehicle  
+エ：HybridCar  
+オ：Book  
+カ：JapaneseDictionary
+
+上記はあくまで一例である。
+
+### 練習10-3
+
+chapter10/practice10/src/PoisonMatango.java
+```
+public class PoisonMatango extends Matango{
+    int poisonCount = 5;
+
+    public PoisonMatango(char suffix){
+        super(suffix);
+    }
+
+    public void attack(Hero h){
+        super.attack(h);
+        if(this.poisonCount > 0){
+            System.out.println("さらに毒の胞子をばらまいた！");
+            int dmg = h.hp / 5;
+            h.hp -= dmg;
+            System.out.println(dmg + "ポイントのダメージ！");
+            this.poisonCount--;
+        }
+    }
+}
+```
+
+お化け毒キノコはお化けキノコの一種であるなので、  
+`public class PoisonMatango extends Matango`
+
+毒攻撃についてはattack(Hero h)でオーバーライドしている。  
+super.attack(h)の次の行から毒攻撃に関する記述を行なっている。
+
+```
+PoisonMatango pm = new PoisonMatango('A');
+```
+上記でインスタンス化できるようにするために、  
+コンストラクタは以下のようになる。
+```
+PoisonMatango(char suffix){
+    super(suffix);
+}
+```
+
+毒攻撃の残り回数をint型フィールドとして持っているため、  
+フィールドは`int poisonCount`である。  
+初期値は5なので
+attackメソッドのオーバーライドでこのフィールドを使用する。
+
+PoisonMatangoのattackメソッドについて、  
+通常のお化けキノコと同じ攻撃を行うので、  
+`suoer.attack(h);`
+
+毒攻撃は残り回数が0でなければ追加で行うなので、
+`if(this.poisonCount > 0)`  
+thisをつけるのを忘れがち。
+
+勇者のHPの1/5に相当するポイントを勇者から引くについては2行に分けて行う。  
+最初の行の`int dmg = h.hp / 5;`ダメージの算出を行い、  
+その次の行の`h.hp -= dmg;`で勇者のHPから算出したダメージを差し引く。
+dmgはそのまま出力に使えるのでこの方法で記述している。
+
+毒攻撃の残り回数を減らすので、  
+`poisonCount--;`をifブロックの最後に記述している。
